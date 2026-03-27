@@ -17,7 +17,7 @@ interface Props {
   day: WorkoutDay | null;
   isNew?: boolean;
   onClose: () => void;
-  onSave: (updates: { name: string; emoji: string; color: string; exerciseColor: string }) => void;
+  onSave: (updates: { name: string; emoji: string; color: string; exerciseColor: string; scheduledDay?: string }) => void;
   onDelete: () => void;
 }
 
@@ -41,6 +41,13 @@ export default function EditDayModal({
   const [emoji, setEmoji] = useState('');
   const [color, setColor] = useState('');
   const [exerciseColor, setExerciseColor] = useState('');
+  const [scheduledDay, setScheduledDay] = useState('');
+
+  const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const DAY_SHORT: Record<string, string> = {
+    Monday: 'Mon', Tuesday: 'Tue', Wednesday: 'Wed', Thursday: 'Thu',
+    Friday: 'Fri', Saturday: 'Sat', Sunday: 'Sun',
+  };
 
   useEffect(() => {
     if (day) {
@@ -48,12 +55,13 @@ export default function EditDayModal({
       setEmoji(day.emoji);
       setColor(day.color);
       setExerciseColor(day.exerciseColor || '#1C2530');
+      setScheduledDay(day.scheduledDay || '');
     }
   }, [day]);
 
   const handleSave = () => {
     if (!name.trim()) return;
-    onSave({ name: name.trim(), emoji, color, exerciseColor });
+    onSave({ name: name.trim(), emoji, color, exerciseColor, scheduledDay: scheduledDay || undefined });
   };
 
   return (
@@ -156,6 +164,33 @@ export default function EditDayModal({
               ))}
             </View>
 
+            <Text style={styles.label}>Scheduled Day</Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.optionRow}
+            >
+              {DAYS_OF_WEEK.map((d) => (
+                <TouchableOpacity
+                  key={d}
+                  style={[
+                    styles.dayBtn,
+                    scheduledDay === d && styles.dayBtnSelected,
+                  ]}
+                  onPress={() => setScheduledDay(scheduledDay === d ? '' : d)}
+                >
+                  <Text
+                    style={[
+                      styles.dayBtnText,
+                      scheduledDay === d && styles.dayBtnTextSelected,
+                    ]}
+                  >
+                    {DAY_SHORT[d]}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+
             <TouchableOpacity
               style={[styles.saveBtn, !name.trim() && styles.saveBtnDisabled]}
               onPress={handleSave}
@@ -257,6 +292,24 @@ const styles = StyleSheet.create({
   },
   emojiText: {
     fontSize: 24,
+  },
+  dayBtn: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
+    backgroundColor: '#F2F2F7',
+    marginRight: 8,
+  },
+  dayBtnSelected: {
+    backgroundColor: '#007AFF',
+  },
+  dayBtnText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#1C1C1E',
+  },
+  dayBtnTextSelected: {
+    color: '#FFFFFF',
   },
   colorGrid: {
     flexDirection: 'row',

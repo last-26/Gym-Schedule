@@ -55,9 +55,14 @@ export default function DayCard({ day, onPress, onLongPress }: Props) {
         <Text style={styles.emoji}>{day.emoji}</Text>
         <View style={styles.headerText}>
           <Text style={[styles.name, { color: textColor }]}>{day.name}</Text>
-          <Text style={[styles.count, { color: subTextColor }]}>
-            {totalCount} exercise{totalCount !== 1 ? 's' : ''}
-          </Text>
+          <View style={styles.subRow}>
+            <Text style={[styles.count, { color: subTextColor }]}>
+              {day.scheduledDay ? `${day.scheduledDay} · ` : ''}{totalCount} exercise{totalCount !== 1 ? 's' : ''}
+            </Text>
+            {lastDate && !day.isActive && (
+              <Text style={[styles.lastDate, { color: subTextColor }]}>Last: {lastDate}</Text>
+            )}
+          </View>
         </View>
         <Ionicons name="chevron-forward" size={22} color={chevronColor} />
       </View>
@@ -80,9 +85,6 @@ export default function DayCard({ day, onPress, onLongPress }: Props) {
         </View>
       )}
 
-      {lastDate && !day.isActive && (
-        <Text style={[styles.lastDate, { color: subTextColor }]}>Last: {lastDate}</Text>
-      )}
     </TouchableOpacity>
   );
 }
@@ -136,8 +138,14 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginBottom: 2,
   },
+  subRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   count: {
     fontSize: 14,
+    flexShrink: 1,
   },
   progressSection: {
     flexDirection: 'row',
@@ -163,6 +171,6 @@ const styles = StyleSheet.create({
   },
   lastDate: {
     fontSize: 12,
-    marginTop: 10,
+    marginLeft: 8,
   },
 });

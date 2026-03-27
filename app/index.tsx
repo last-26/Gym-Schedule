@@ -58,6 +58,7 @@ export default function HomeScreen() {
     emoji: string;
     color: string;
     exerciseColor: string;
+    scheduledDay?: string;
   }) => {
     if (isCreatingNew) {
       const newDay: WorkoutDay = {
@@ -66,6 +67,7 @@ export default function HomeScreen() {
         emoji: updates.emoji,
         color: updates.color,
         exerciseColor: updates.exerciseColor,
+        scheduledDay: updates.scheduledDay,
         exercises: [],
         isActive: false,
       };

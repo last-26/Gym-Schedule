@@ -10,6 +10,7 @@ function migrateData(data: WorkoutData): WorkoutData {
     ...day,
     isActive: day.isActive ?? false,
     exerciseColor: day.exerciseColor ?? '#212529',
+    scheduledDay: day.scheduledDay ?? undefined,
     lastCompletedDate: day.lastCompletedDate ?? undefined,
     exercises: day.exercises.map((ex: any) => ({
       id: ex.id,
@@ -196,7 +197,7 @@ export async function deleteWorkoutDay(dayId: string): Promise<WorkoutData> {
 // Gün bilgilerini güncelle (isim, emoji, renk)
 export async function updateDayInfo(
   dayId: string,
-  updates: Partial<Pick<WorkoutDay, 'name' | 'emoji' | 'color' | 'exerciseColor'>>,
+  updates: Partial<Pick<WorkoutDay, 'name' | 'emoji' | 'color' | 'exerciseColor' | 'scheduledDay'>>,
 ): Promise<WorkoutData> {
   const data = await loadWorkoutData();
   const updated = data.map((day) =>
