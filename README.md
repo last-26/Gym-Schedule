@@ -11,7 +11,7 @@ A gym workout tracker built with React Native and Expo. Track your workout progr
 - Track exercise weights with quick inline editing
 - Start/finish workout sessions per day
 - Mark exercises as completed during active sessions
-- Auto-complete prompt when all exercises are done
+- Smart finish: auto-completes when all done, confirms if exercises remain incomplete
 - Exercise form image viewer (add your own images to assets)
 - Animated storm background with rain and procedural lightning bolts
 - OTA updates via EAS Update (no reinstall needed)
@@ -52,7 +52,7 @@ npx eas update --branch preview --message "update description"
 app/
   _layout.tsx              # Root layout, dark theme
   index.tsx                # Home screen (program cards)
-  day/[id].tsx             # Day detail (exercises, workout session)
+  day/[id].tsx             # Day detail (exercises, workout session, drag-to-reorder)
 components/
   DayCard.tsx              # Program card component
   ExerciseRow.tsx          # Exercise row with weight + completion

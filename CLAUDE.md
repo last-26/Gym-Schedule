@@ -87,10 +87,11 @@ interface WorkoutDay {
 
 ### Day Detail (`app/day/[id].tsx`)
 - Storm background effect (same as home)
-- **"Start Workout"** button at bottom
+- Exercise list uses `DraggableFlatList` with flex layout for proper scrolling
+- **"Start Workout"** button rendered as list footer (inside scroll)
 - When active: completion checkmarks on each exercise, progress bar
-- **All exercises completed** → auto-prompt to finish day
-- **"Finish Day"** button (manual finish)
+- **All exercises completed** → auto-finishes silently
+- **"Finish Day"** button (manual) → smart confirmation if exercises remain incomplete
 - Weight display: tap pencil icon to edit, saves on blur
 - Tap exercise name → opens ImageViewer (for exercise form images)
 - Drag-to-reorder exercises
@@ -151,4 +152,6 @@ npx eas update --branch preview --message "description"
 - **No "Complete Week" button** — replaced by per-day session system
 - **Exercise images:** Manual asset files, linked via `image` field on Exercise
 - **EditDayModal:** Only creates card on Save (not on + button press)
-- **Bottom bar:** Uses normal flow layout (not absolute) to avoid scroll overlap
+- **Bottom bar:** Start/Finish button rendered as `ListFooterComponent` inside DraggableFlatList to avoid overlap
+- **Header:** `headerTransparent` is **not** used — removed to prevent status bar/content overlap on Android
+- **Finish confirmation:** Smart prompt — only asks "finish without completing all?" if exercises remain incomplete; auto-finishes silently when all done
