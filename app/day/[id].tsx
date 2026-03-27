@@ -19,6 +19,7 @@ import {
   updateExerciseWeight,
   deleteExercise,
   addExercise,
+  updateExercise,
   toggleExerciseCompleted,
   startDay,
   completeDay,
@@ -34,6 +35,7 @@ export default function DayDetailScreen() {
   const router = useRouter();
   const [day, setDay] = useState<WorkoutDay | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [editingExercise, setEditingExercise] = useState<Exercise | null>(null);
   const [imageExercise, setImageExercise] = useState<Exercise | null>(null);
 
   const loadDay = useCallback(async () => {
@@ -126,6 +128,23 @@ export default function DayDetailScreen() {
     setModalVisible(false);
   };
 
+  const handleEditExercise = async (
+    exerciseId: string,
+    updates: { name: string; sets: number; reps: string },
+  ) => {
+    if (!day) return;
+    const updated = await updateExercise(day.id, exerciseId, updates);
+    const found = updated.find((d) => d.id === day.id);
+    if (found) setDay(found);
+    setEditingExercise(null);
+    setModalVisible(false);
+  };
+
+  const openEditModal = (exercise: Exercise) => {
+    setEditingExercise(exercise);
+    setModalVisible(true);
+  };
+
   const handleStartDay = async () => {
     if (!day) return;
     const updated = await startDay(day.id);
@@ -171,6 +190,7 @@ export default function DayDetailScreen() {
         onToggleCompleted={() => handleToggleCompleted(item.id)}
         onDelete={() => handleDelete(item.id)}
         onImagePress={() => setImageExercise(item)}
+        onEdit={() => openEditModal(item)}
       />
     ),
     [day],
@@ -255,8 +275,13 @@ export default function DayDetailScreen() {
 
       <AddExerciseModal
         visible={modalVisible}
-        onClose={() => setModalVisible(false)}
+        onClose={() => {
+          setModalVisible(false);
+          setEditingExercise(null);
+        }}
         onAdd={handleAddExercise}
+        onEdit={handleEditExercise}
+        editingExercise={editingExercise}
       />
 
       <ImageViewer
@@ -343,7 +368,7 @@ const styles = StyleSheet.create({
   },
   footerBtn: {
     paddingTop: 16,
-    paddingBottom: 80,
+    paddingBottom: 120,
     paddingHorizontal: 20,
   },
   startBtn: {

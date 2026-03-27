@@ -109,6 +109,26 @@ export async function addExercise(
   return updated;
 }
 
+// Egzersiz güncelle
+export async function updateExercise(
+  dayId: string,
+  exerciseId: string,
+  updates: Partial<Pick<Exercise, 'name' | 'sets' | 'reps'>>,
+): Promise<WorkoutData> {
+  const data = await loadWorkoutData();
+  const updated = data.map((day) => {
+    if (day.id !== dayId) return day;
+    return {
+      ...day,
+      exercises: day.exercises.map((ex) =>
+        ex.id === exerciseId ? { ...ex, ...updates } : ex,
+      ),
+    };
+  });
+  await saveWorkoutData(updated);
+  return updated;
+}
+
 // Egzersiz sil
 export async function deleteExercise(
   dayId: string,

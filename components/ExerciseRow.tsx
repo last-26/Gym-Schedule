@@ -20,6 +20,7 @@ interface Props {
   onToggleCompleted: () => void;
   onDelete: () => void;
   onImagePress: () => void;
+  onEdit: () => void;
 }
 
 function isLightColor(hex: string): boolean {
@@ -40,6 +41,7 @@ export default function ExerciseRow({
   onToggleCompleted,
   onDelete,
   onImagePress,
+  onEdit,
 }: Props) {
   const [editing, setEditing] = useState(false);
   const [weightText, setWeightText] = useState(
@@ -108,12 +110,21 @@ export default function ExerciseRow({
               />
             )}
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={handleDelete}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          >
-            <Ionicons name="trash-outline" size={18} color="#FF3B30" />
-          </TouchableOpacity>
+          <View style={styles.actionBtns}>
+            <TouchableOpacity
+              onPress={onEdit}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={{ marginRight: 12 }}
+            >
+              <Ionicons name="create-outline" size={18} color="#007AFF" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleDelete}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Ionicons name="trash-outline" size={18} color="#FF3B30" />
+            </TouchableOpacity>
+          </View>
         </View>
 
         <Text style={[styles.setsReps, { color: subColor }]}>
@@ -212,6 +223,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 4,
+  },
+  actionBtns: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   nameArea: {
     flexDirection: 'row',

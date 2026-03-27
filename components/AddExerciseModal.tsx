@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -15,27 +15,51 @@ interface Props {
   visible: boolean;
   onClose: () => void;
   onAdd: (exercise: Exercise) => void;
+  onEdit?: (exerciseId: string, updates: { name: string; sets: number; reps: string }) => void;
+  editingExercise?: Exercise | null;
 }
 
-export default function AddExerciseModal({ visible, onClose, onAdd }: Props) {
+export default function AddExerciseModal({ visible, onClose, onAdd, onEdit, editingExercise }: Props) {
   const [name, setName] = useState('');
   const [sets, setSets] = useState('3');
   const [reps, setReps] = useState('10-12');
 
-  const handleAdd = () => {
+  const isEditMode = !!editingExercise;
+
+  useEffect(() => {
+    if (editingExercise) {
+      setName(editingExercise.name);
+      setSets(editingExercise.sets.toString());
+      setReps(editingExercise.reps);
+    } else {
+      setName('');
+      setSets('3');
+      setReps('10-12');
+    }
+  }, [editingExercise, visible]);
+
+  const handleSubmit = () => {
     const trimmedName = name.trim();
     if (!trimmedName) return;
 
-    const exercise: Exercise = {
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-      name: trimmedName,
-      sets: parseInt(sets, 10) || 3,
-      reps: reps.trim() || '10-12',
-      weight: null,
-      completed: false,
-      notes: '',
-    };
-    onAdd(exercise);
+    if (isEditMode && onEdit && editingExercise) {
+      onEdit(editingExercise.id, {
+        name: trimmedName,
+        sets: parseInt(sets, 10) || 3,
+        reps: reps.trim() || '10-12',
+      });
+    } else {
+      const exercise: Exercise = {
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+        name: trimmedName,
+        sets: parseInt(sets, 10) || 3,
+        reps: reps.trim() || '10-12',
+        weight: null,
+        completed: false,
+        notes: '',
+      };
+      onAdd(exercise);
+    }
     setName('');
     setSets('3');
     setReps('10-12');
@@ -59,7 +83,7 @@ export default function AddExerciseModal({ visible, onClose, onAdd }: Props) {
         />
         <View style={styles.sheet}>
           <View style={styles.handle} />
-          <Text style={styles.title}>New Exercise</Text>
+          <Text style={styles.title}>{isEditMode ? 'Edit Exercise' : 'New Exercise'}</Text>
 
           <Text style={styles.label}>Exercise Name</Text>
           <TextInput
@@ -95,10 +119,10 @@ export default function AddExerciseModal({ visible, onClose, onAdd }: Props) {
 
           <TouchableOpacity
             style={[styles.addBtn, !name.trim() && styles.addBtnDisabled]}
-            onPress={handleAdd}
+            onPress={handleSubmit}
             disabled={!name.trim()}
           >
-            <Text style={styles.addBtnText}>Add</Text>
+            <Text style={styles.addBtnText}>{isEditMode ? 'Save' : 'Add'}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.cancelBtn} onPress={onClose}>
