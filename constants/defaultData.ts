@@ -10,8 +10,8 @@ export const DEFAULT_DATA: WorkoutData = [
     id: 'upper1',
     name: 'Üst 1',
     emoji: '\u{1F4AA}',
-    color: '#1E3A5F',
-    exerciseColor: '#1C2530',
+    color: '#023E8A',
+    exerciseColor: '#03045E',
     isActive: false,
     exercises: [
       { id: genId(), name: 'Bench Press', sets: 4, reps: '8-10', weight: null, completed: false, notes: '' },
@@ -25,8 +25,8 @@ export const DEFAULT_DATA: WorkoutData = [
     id: 'lower1',
     name: 'Alt 1',
     emoji: '\u{1F9B5}',
-    color: '#2D1B4E',
-    exerciseColor: '#2A1F35',
+    color: '#C1121F',
+    exerciseColor: '#780000',
     isActive: false,
     exercises: [
       { id: genId(), name: 'Squat', sets: 4, reps: '6-8', weight: null, completed: false, notes: '' },
@@ -40,8 +40,8 @@ export const DEFAULT_DATA: WorkoutData = [
     id: 'upper2',
     name: 'Üst 2',
     emoji: '\u{1F3CB}\u{FE0F}',
-    color: '#1B3D2F',
-    exerciseColor: '#1D2B22',
+    color: '#1B4332',
+    exerciseColor: '#2A9D8F',
     isActive: false,
     exercises: [
       { id: genId(), name: 'Pull-up / Lat Pulldown', sets: 4, reps: '6-8', weight: null, completed: false, notes: '' },
@@ -55,8 +55,8 @@ export const DEFAULT_DATA: WorkoutData = [
     id: 'lower2',
     name: 'Alt 2',
     emoji: '\u{26A1}',
-    color: '#4A1C1C',
-    exerciseColor: '#302020',
+    color: '#3C096C',
+    exerciseColor: '#212529',
     isActive: false,
     exercises: [
       { id: genId(), name: 'Deadlift', sets: 4, reps: '5', weight: null, completed: false, notes: '' },

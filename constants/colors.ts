@@ -1,19 +1,45 @@
-// Program card colors — mix of dark and light tones
+// 18 colors — dark, mid, light variety
 export const CARD_COLORS = [
-  // Dark tones
-  '#1E3A5F', '#2D1B4E', '#1B3D2F', '#4A1C1C',
-  '#3B2F15', '#1C2D3D', '#2E1E3E', '#1A3333',
-  // Light tones
-  '#EBF5FF', '#F5EBFF', '#EBFFF2', '#FFF3EB',
+  '#780000',   // Bordo
+  '#C1121F',   // Canli Kirmizi
+  '#FFB5A7',   // Mercan
+  '#F77F00',   // Turuncu
+  '#FFC300',   // Hardal
+  '#FFF3B0',   // Krem
+  '#1B4332',   // Orman Yesili
+  '#2A9D8F',   // Zumrut Yesili
+  '#D8F3DC',   // Nane Yesili
+  '#00BCD4',   // Camgobegi
+  '#E0FBFC',   // Acik Camgobegi
+  '#023E8A',   // Klasik Mavi
+  '#03045E',   // Gece Mavisi
+  '#3C096C',   // Koyu Mor
+  '#9D4EDD',   // Canli Mor
+  '#E0AAFF',   // Lila
+  '#212529',   // Antrasit
+  '#F8F9FA',   // Acik Gri
 ];
 
-// Exercise card colors — for inside the program
+// Same palette for exercise cards
 export const EXERCISE_COLORS = [
-  // Dark tones
-  '#1C2530', '#2A1F35', '#1D2B22', '#302020',
-  '#2B2518', '#1A2530', '#252030', '#1C2828',
-  // Light tones
-  '#FFFFFF', '#F8F9FA', '#F0F4FF', '#FFF8F0',
+  '#780000',
+  '#C1121F',
+  '#FFB5A7',
+  '#F77F00',
+  '#FFC300',
+  '#FFF3B0',
+  '#1B4332',
+  '#2A9D8F',
+  '#D8F3DC',
+  '#00BCD4',
+  '#E0FBFC',
+  '#023E8A',
+  '#03045E',
+  '#3C096C',
+  '#9D4EDD',
+  '#E0AAFF',
+  '#212529',
+  '#F8F9FA',
 ];
 
 export const EMOJI_OPTIONS = [

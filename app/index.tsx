@@ -38,8 +38,8 @@ export default function HomeScreen() {
       id: '',
       name: '',
       emoji: '\u{1F4AA}',
-      color: '#1E3A5F',
-      exerciseColor: '#1C2530',
+      color: '#023E8A',
+      exerciseColor: '#03045E',
       exercises: [],
       isActive: false,
     });

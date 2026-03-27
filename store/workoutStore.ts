@@ -9,7 +9,7 @@ function migrateData(data: WorkoutData): WorkoutData {
   return data.map((day) => ({
     ...day,
     isActive: day.isActive ?? false,
-    exerciseColor: day.exerciseColor ?? '#1C2530',
+    exerciseColor: day.exerciseColor ?? '#212529',
     lastCompletedDate: day.lastCompletedDate ?? undefined,
     exercises: day.exercises.map((ex: any) => ({
       id: ex.id,
