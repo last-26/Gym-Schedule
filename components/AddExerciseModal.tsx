@@ -31,8 +31,8 @@ export default function AddExerciseModal({ visible, onClose, onAdd }: Props) {
       name: trimmedName,
       sets: parseInt(sets, 10) || 3,
       reps: reps.trim() || '10-12',
-      lastWeight: null,
-      currentWeight: null,
+      weight: null,
+      completed: false,
       notes: '',
     };
     onAdd(exercise);
@@ -52,13 +52,19 @@ export default function AddExerciseModal({ visible, onClose, onAdd }: Props) {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.overlay}
       >
+        <TouchableOpacity
+          style={styles.backdrop}
+          activeOpacity={1}
+          onPress={onClose}
+        />
         <View style={styles.sheet}>
+          <View style={styles.handle} />
           <Text style={styles.title}>Yeni Egzersiz</Text>
 
-          <Text style={styles.label}>Egzersiz Adı</Text>
+          <Text style={styles.label}>Egzersiz Adi</Text>
           <TextInput
             style={styles.input}
-            placeholder="Örn: Bench Press"
+            placeholder="Orn: Bench Press"
             placeholderTextColor="#C7C7CC"
             value={name}
             onChangeText={setName}
@@ -96,7 +102,7 @@ export default function AddExerciseModal({ visible, onClose, onAdd }: Props) {
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.cancelBtn} onPress={onClose}>
-            <Text style={styles.cancelBtnText}>İptal</Text>
+            <Text style={styles.cancelBtnText}>Iptal</Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -108,14 +114,25 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.4)',
+  },
+  backdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   sheet: {
     backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     padding: 24,
     paddingBottom: 40,
+  },
+  handle: {
+    width: 40,
+    height: 4,
+    backgroundColor: '#E0E0E0',
+    borderRadius: 2,
+    alignSelf: 'center',
+    marginBottom: 16,
   },
   title: {
     fontSize: 22,
@@ -125,7 +142,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   label: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
     color: '#8E8E93',
     marginBottom: 6,
@@ -134,7 +151,7 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: '#F2F2F7',
-    borderRadius: 10,
+    borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 16,
@@ -150,8 +167,8 @@ const styles = StyleSheet.create({
   },
   addBtn: {
     backgroundColor: '#007AFF',
-    borderRadius: 12,
-    paddingVertical: 14,
+    borderRadius: 14,
+    paddingVertical: 16,
     alignItems: 'center',
     marginTop: 4,
   },

@@ -5,14 +5,20 @@ import { StatusBar } from 'expo-status-bar';
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <StatusBar style="dark" />
+      <StatusBar style="light" />
       <Stack
         screenOptions={{
-          headerStyle: { backgroundColor: '#F2F2F7' },
-          headerTintColor: '#1C1C1E',
+          headerStyle: { backgroundColor: '#1A1A2E' },
+          headerTintColor: '#FFFFFF',
           headerShadowVisible: false,
+          headerTitleStyle: { fontWeight: '700' },
+          contentStyle: { backgroundColor: '#1A1A2E' },
+          animation: 'slide_from_right',
         }}
-      />
+      >
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="day/[id]" options={{ title: '' }} />
+      </Stack>
     </GestureHandlerRootView>
   );
 }
