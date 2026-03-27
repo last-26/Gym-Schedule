@@ -21,6 +21,7 @@ interface Props {
   onDelete: () => void;
   onImagePress: () => void;
   onEdit: () => void;
+  onViewImage: () => void;
 }
 
 function isLightColor(hex: string): boolean {
@@ -42,6 +43,7 @@ export default function ExerciseRow({
   onDelete,
   onImagePress,
   onEdit,
+  onViewImage,
 }: Props) {
   const [editing, setEditing] = useState(false);
   const [weightText, setWeightText] = useState(
@@ -111,6 +113,15 @@ export default function ExerciseRow({
             )}
           </TouchableOpacity>
           <View style={styles.actionBtns}>
+            {exercise.image && (
+              <TouchableOpacity
+                onPress={onViewImage}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                style={{ marginRight: 12 }}
+              >
+                <Ionicons name="eye-outline" size={18} color="#34C759" />
+              </TouchableOpacity>
+            )}
             <TouchableOpacity
               onPress={onEdit}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}

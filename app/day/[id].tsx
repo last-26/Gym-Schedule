@@ -30,6 +30,7 @@ import {
 import ExerciseRow from '../../components/ExerciseRow';
 import AddExerciseModal from '../../components/AddExerciseModal';
 import ImageViewer from '../../components/ImageViewer';
+import FullScreenImage from '../../components/FullScreenImage';
 import StormBackground from '../../components/StormBackground';
 
 export default function DayDetailScreen() {
@@ -40,6 +41,7 @@ export default function DayDetailScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [editingExercise, setEditingExercise] = useState<Exercise | null>(null);
   const [imageExercise, setImageExercise] = useState<Exercise | null>(null);
+  const [viewImageExercise, setViewImageExercise] = useState<Exercise | null>(null);
 
   const loadDay = useCallback(async () => {
     const data = await loadWorkoutData();
@@ -246,6 +248,7 @@ export default function DayDetailScreen() {
         onDelete={() => handleDelete(item.id)}
         onImagePress={() => setImageExercise(item)}
         onEdit={() => openEditModal(item)}
+        onViewImage={() => setViewImageExercise(item)}
       />
     ),
     [day],
@@ -347,6 +350,15 @@ export default function DayDetailScreen() {
         onPickImage={handlePickImage}
         onRemoveImage={handleRemoveImage}
       />
+
+      {viewImageExercise?.image && (
+        <FullScreenImage
+          visible={true}
+          exerciseName={viewImageExercise.name}
+          imagePath={viewImageExercise.image}
+          onClose={() => setViewImageExercise(null)}
+        />
+      )}
     </View>
   );
 }
