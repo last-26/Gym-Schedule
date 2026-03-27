@@ -18,11 +18,13 @@ import {
 } from '../store/workoutStore';
 import DayCard from '../components/DayCard';
 import EditDayModal from '../components/EditDayModal';
+import StormBackground from '../components/StormBackground';
 
 export default function HomeScreen() {
   const [data, setData] = useState<WorkoutData>([]);
   const [editDay, setEditDay] = useState<WorkoutDay | null>(null);
   const [editModalVisible, setEditModalVisible] = useState(false);
+  const [isCreatingNew, setIsCreatingNew] = useState(false);
   const router = useRouter();
 
   useFocusEffect(
@@ -31,24 +33,22 @@ export default function HomeScreen() {
     }, []),
   );
 
-  const handleAddDay = async () => {
-    const newDay: WorkoutDay = {
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-      name: 'Yeni Program',
+  const handleAddDay = () => {
+    setEditDay({
+      id: '',
+      name: '',
       emoji: '\u{1F4AA}',
       color: '#EBF5FF',
       exercises: [],
       isActive: false,
-    };
-    const updated = await addWorkoutDay(newDay);
-    setData(updated);
-    // Yeni eklenen gunun duzenleme ekranini ac
-    setEditDay(newDay);
+    });
+    setIsCreatingNew(true);
     setEditModalVisible(true);
   };
 
   const handleEditDay = (day: WorkoutDay) => {
     setEditDay(day);
+    setIsCreatingNew(false);
     setEditModalVisible(true);
   };
 
@@ -57,22 +57,40 @@ export default function HomeScreen() {
     emoji: string;
     color: string;
   }) => {
-    if (!editDay) return;
-    const updated = await updateDayInfo(editDay.id, updates);
-    setData(updated);
+    if (isCreatingNew) {
+      const newDay: WorkoutDay = {
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+        name: updates.name,
+        emoji: updates.emoji,
+        color: updates.color,
+        exercises: [],
+        isActive: false,
+      };
+      const updated = await addWorkoutDay(newDay);
+      setData(updated);
+    } else if (editDay) {
+      const updated = await updateDayInfo(editDay.id, updates);
+      setData(updated);
+    }
     setEditModalVisible(false);
     setEditDay(null);
+    setIsCreatingNew(false);
   };
 
   const handleDeleteDay = () => {
-    if (!editDay) return;
+    if (!editDay || isCreatingNew) {
+      setEditModalVisible(false);
+      setEditDay(null);
+      setIsCreatingNew(false);
+      return;
+    }
     Alert.alert(
-      'Programi Sil',
-      `"${editDay.name}" programini silmek istediginize emin misiniz?`,
+      'Delete Program',
+      `Are you sure you want to delete "${editDay.name}"?`,
       [
-        { text: 'Iptal', style: 'cancel' },
+        { text: 'Cancel', style: 'cancel' },
         {
-          text: 'Sil',
+          text: 'Delete',
           style: 'destructive',
           onPress: async () => {
             const updated = await deleteWorkoutDay(editDay.id);
@@ -85,14 +103,19 @@ export default function HomeScreen() {
     );
   };
 
+  const handleCloseModal = () => {
+    setEditModalVisible(false);
+    setEditDay(null);
+    setIsCreatingNew(false);
+  };
+
   return (
     <View style={styles.container}>
+      <StormBackground />
+
       <View style={styles.headerSection}>
         <View style={styles.headerTop}>
-          <View>
-            <Text style={styles.greeting}>Gym Tracker</Text>
-            <Text style={styles.subtitle}>Antrenman Programin</Text>
-          </View>
+          <Text style={styles.greeting}>Gym Tracker</Text>
           <TouchableOpacity style={styles.addBtn} onPress={handleAddDay}>
             <Ionicons name="add" size={28} color="#FFFFFF" />
           </TouchableOpacity>
@@ -106,10 +129,10 @@ export default function HomeScreen() {
       >
         {data.length === 0 ? (
           <View style={styles.empty}>
-            <Ionicons name="barbell-outline" size={64} color="#C7C7CC" />
-            <Text style={styles.emptyText}>Henuz program yok</Text>
+            <Ionicons name="barbell-outline" size={64} color="rgba(255,255,255,0.3)" />
+            <Text style={styles.emptyText}>No programs yet</Text>
             <Text style={styles.emptySubtext}>
-              + butonuyla yeni program ekle
+              Tap + to add a new program
             </Text>
           </View>
         ) : (
@@ -127,10 +150,8 @@ export default function HomeScreen() {
       <EditDayModal
         visible={editModalVisible}
         day={editDay}
-        onClose={() => {
-          setEditModalVisible(false);
-          setEditDay(null);
-        }}
+        isNew={isCreatingNew}
+        onClose={handleCloseModal}
         onSave={handleSaveDay}
         onDelete={handleDeleteDay}
       />
@@ -141,15 +162,12 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F2F2F7',
+    backgroundColor: '#0D0D1A',
   },
   headerSection: {
-    backgroundColor: '#1A1A2E',
     paddingTop: 60,
     paddingBottom: 24,
     paddingHorizontal: 20,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
   },
   headerTop: {
     flexDirection: 'row',
@@ -157,14 +175,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   greeting: {
-    fontSize: 28,
-    fontWeight: '800',
+    fontSize: 32,
+    fontWeight: '900',
     color: '#FFFFFF',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: 'rgba(255,255,255,0.6)',
-    marginTop: 4,
+    letterSpacing: 1,
   },
   addBtn: {
     width: 48,
@@ -175,16 +189,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     shadowColor: '#007AFF',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    elevation: 8,
   },
   scroll: {
     flex: 1,
   },
   scrollContent: {
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 8,
     paddingBottom: 40,
   },
   empty: {
@@ -194,12 +208,12 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#8E8E93',
+    color: 'rgba(255,255,255,0.5)',
     marginTop: 16,
   },
   emptySubtext: {
     fontSize: 14,
-    color: '#C7C7CC',
+    color: 'rgba(255,255,255,0.3)',
     marginTop: 8,
   },
 });
