@@ -32,6 +32,12 @@
       "expo-router",
       "expo-font"
     ],
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/19e529a8-8274-4ff1-884a-9966b0098fde"
+    },
     "extra": {
       "router": {},
       "eas": {

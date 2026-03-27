@@ -9,6 +9,7 @@
         "buildType": "apk"
       },
       "distribution": "internal",
+      "channel": "preview",
       "env": {
         "NPM_CONFIG_LEGACY_PEER_DEPS": "true"
       }
@@ -17,6 +18,7 @@
       "android": {
         "buildType": "app-bundle"
       },
+      "channel": "production",
       "env": {
         "NPM_CONFIG_LEGACY_PEER_DEPS": "true"
       }
