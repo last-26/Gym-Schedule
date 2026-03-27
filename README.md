@@ -5,14 +5,15 @@ A gym workout tracker built with React Native and Expo. Track your workout progr
 ## Features
 
 - Create, edit, and delete workout programs
+- Assign a scheduled day (Mon–Sun) to each program, auto-sorted on home screen
 - Customize program cards with 18 colors and 12 emojis
 - Separate color selection for exercise cards inside each program
-- Add, remove, and reorder exercises via drag-and-drop
+- Add, edit, remove, and reorder exercises via drag-and-drop
 - Track exercise weights with quick inline editing
 - Start/finish workout sessions per day
 - Mark exercises as completed during active sessions
 - Smart finish: auto-completes when all done, confirms if exercises remain incomplete
-- Exercise form image viewer (add your own images to assets)
+- Pick exercise form images from gallery, view full-screen with one tap
 - Animated storm background with rain and procedural lightning bolts
 - OTA updates via EAS Update (no reinstall needed)
 - All data persisted locally with AsyncStorage
@@ -25,6 +26,7 @@ A gym workout tracker built with React Native and Expo. Track your workout progr
 - AsyncStorage (local persistence)
 - react-native-draggable-flatlist
 - react-native-reanimated + gesture-handler
+- expo-image-picker + expo-file-system (gallery image support)
 - expo-updates (OTA)
 
 ## Getting Started
@@ -57,8 +59,9 @@ components/
   DayCard.tsx              # Program card component
   ExerciseRow.tsx          # Exercise row with weight + completion
   AddExerciseModal.tsx     # New exercise form
-  EditDayModal.tsx         # Edit program (name, emoji, colors)
-  ImageViewer.tsx          # Exercise form image modal
+  EditDayModal.tsx         # Edit program (name, emoji, colors, scheduled day)
+  ImageViewer.tsx          # Exercise image management (pick/change/remove)
+  FullScreenImage.tsx      # Full-screen image viewer (tap to close)
   StormBackground.tsx      # Rain + lightning animation
 store/
   workoutStore.ts          # AsyncStorage data layer

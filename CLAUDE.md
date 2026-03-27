@@ -16,6 +16,8 @@ A React Native (Expo) gym workout tracker app. Users create workout programs (da
 - **Drag & Drop:** `react-native-draggable-flatlist`
 - **Icons:** `@expo/vector-icons` (Ionicons)
 - **OTA Updates:** `expo-updates` (EAS Update)
+- **Image Picker:** `expo-image-picker` (gallery access)
+- **File System:** `expo-file-system` (persistent image storage)
 - **Language:** TypeScript
 
 ---
@@ -34,7 +36,8 @@ GymTracker/
 │   ├── ExerciseRow.tsx        # Exercise row with weight, completion toggle
 │   ├── AddExerciseModal.tsx   # New exercise form modal
 │   ├── EditDayModal.tsx       # Edit program (name, emoji, card color, exercise color)
-│   ├── ImageViewer.tsx        # Exercise form image viewer modal
+│   ├── ImageViewer.tsx        # Exercise image management modal (pick/change/remove)
+│   ├── FullScreenImage.tsx    # Full-screen dark overlay image viewer (view only)
 │   └── StormBackground.tsx    # Animated rain + lightning bolt background
 ├── store/
 │   └── workoutStore.ts        # All AsyncStorage operations + data migration
@@ -68,6 +71,7 @@ interface WorkoutDay {
   emoji: string;
   color: string;          // program card color (hex)
   exerciseColor: string;  // exercise card color inside program (hex)
+  scheduledDay?: string;  // day of week (Monday, Tuesday, etc.)
   exercises: Exercise[];
   isActive: boolean;      // workout session started
   lastCompletedDate?: string;
@@ -82,8 +86,9 @@ interface WorkoutDay {
 - Dark background (#0D0D1A) with animated storm effect
 - Program cards with customizable colors (18-color palette)
 - **+ button** to add new program (modal form, card created on Save only)
-- **Long press** card to edit (name, emoji, card color, exercise color) or delete
-- Cards show: emoji, name, exercise count, active badge, last completed date
+- **Long press** card to edit (name, emoji, card color, exercise color, scheduled day) or delete
+- Cards show: emoji, name, scheduled day, exercise count, last completed date (inline)
+- **Auto-sorted** by day of week (Monday → Sunday), unscheduled programs at bottom
 
 ### Day Detail (`app/day/[id].tsx`)
 - Storm background effect (same as home)
@@ -93,7 +98,10 @@ interface WorkoutDay {
 - **All exercises completed** → auto-finishes silently
 - **"Finish Day"** button (manual) → smart confirmation if exercises remain incomplete
 - Weight display: tap pencil icon to edit, saves on blur
-- Tap exercise name → opens ImageViewer (for exercise form images)
+- Tap exercise name → opens ImageViewer (pick/change/remove image from gallery)
+- **Eye icon** on exercise row (visible when image exists) → full-screen dark overlay image viewer
+- **Edit icon** (pencil) on exercise row → edit name, sets, reps via modal
+- **Delete icon** (trash) on exercise row → delete with confirmation
 - Drag-to-reorder exercises
 - **+ button** in header to add exercises
 
@@ -116,7 +124,7 @@ Text colors auto-adapt (white on dark, black on light) via `isLightColor()` help
 - `migrateData()` handles schema migration from old versions
 - Functions: loadWorkoutData, saveWorkoutData, resetWorkoutData
 - Day CRUD: addWorkoutDay, deleteWorkoutDay, updateDayInfo
-- Exercise CRUD: addExercise, deleteExercise, updateDayExercises
+- Exercise CRUD: addExercise, deleteExercise, updateExercise, updateDayExercises
 - Workout session: startDay, completeDay, toggleExerciseCompleted
 - Weight: updateExerciseWeight
 - Image: updateExerciseImage
@@ -150,7 +158,7 @@ npx eas update --branch preview --message "description"
 - **Schema migration:** Old data auto-migrates (new fields get defaults)
 - **Session flow:** Start Workout → mark exercises done → auto-prompt or manual Finish Day
 - **No "Complete Week" button** — replaced by per-day session system
-- **Exercise images:** Manual asset files, linked via `image` field on Exercise
+- **Exercise images:** Picked from device gallery via `expo-image-picker`, copied to `documentDirectory/exercise-images/` for persistence
 - **EditDayModal:** Only creates card on Save (not on + button press)
 - **Bottom bar:** Start/Finish button rendered as `ListFooterComponent` inside DraggableFlatList to avoid overlap
 - **Header:** `headerTransparent` is **not** used — removed to prevent status bar/content overlap on Android
