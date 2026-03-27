@@ -119,7 +119,7 @@ export default function ExerciseRow({
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 style={{ marginRight: 12 }}
               >
-                <Ionicons name="eye-outline" size={18} color="#34C759" />
+                <Ionicons name="eye-outline" size={24} color="#34C759" />
               </TouchableOpacity>
             )}
             <TouchableOpacity
@@ -127,13 +127,13 @@ export default function ExerciseRow({
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               style={{ marginRight: 12 }}
             >
-              <Ionicons name="create-outline" size={18} color="#007AFF" />
+              <Ionicons name="create-outline" size={22} color="#007AFF" />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={handleDelete}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
-              <Ionicons name="trash-outline" size={18} color="#FF3B30" />
+              <Ionicons name="trash-outline" size={22} color="#FF3B30" />
             </TouchableOpacity>
           </View>
         </View>
