@@ -50,9 +50,9 @@ export default function ExerciseRow({
   };
 
   const handleDelete = () => {
-    Alert.alert('Egzersizi Sil', `"${exercise.name}" silinsin mi?`, [
-      { text: 'İptal', style: 'cancel' },
-      { text: 'Sil', style: 'destructive', onPress: onDelete },
+    Alert.alert('Delete Exercise', `Delete "${exercise.name}"?`, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', style: 'destructive', onPress: onDelete },
     ]);
   };
 
@@ -99,7 +99,7 @@ export default function ExerciseRow({
         </View>
 
         <Text style={styles.setsReps}>
-          {exercise.sets} set x {exercise.reps} tekrar
+          {exercise.sets} sets x {exercise.reps} reps
         </Text>
 
         <View style={styles.bottomRow}>

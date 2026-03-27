@@ -54,10 +54,10 @@ export default function ImageViewer({
               <View style={styles.placeholder}>
                 <Ionicons name="image-outline" size={64} color="#C7C7CC" />
                 <Text style={styles.placeholderText}>
-                  Gorsel henuz eklenmedi
+                  No image added yet
                 </Text>
                 <Text style={styles.placeholderSubtext}>
-                  assets klasorune gorsel ekleyip{'\n'}egzersizle eslestirin
+                  Add an image to the assets folder{'\n'}and link it to this exercise
                 </Text>
               </View>
             )}

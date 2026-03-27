@@ -19,7 +19,7 @@ export default function DayCard({ day, onPress, onLongPress }: Props) {
   const completedCount = day.exercises.filter((ex) => ex.completed).length;
 
   const lastDate = day.lastCompletedDate
-    ? new Date(day.lastCompletedDate).toLocaleDateString('tr-TR', {
+    ? new Date(day.lastCompletedDate).toLocaleDateString('en-US', {
         day: 'numeric',
         month: 'short',
       })
@@ -35,7 +35,7 @@ export default function DayCard({ day, onPress, onLongPress }: Props) {
       {day.isActive && (
         <View style={styles.activeBadge}>
           <View style={styles.activeDot} />
-          <Text style={styles.activeText}>Aktif</Text>
+          <Text style={styles.activeText}>Active</Text>
         </View>
       )}
 
@@ -43,7 +43,9 @@ export default function DayCard({ day, onPress, onLongPress }: Props) {
         <Text style={styles.emoji}>{day.emoji}</Text>
         <View style={styles.headerText}>
           <Text style={styles.name}>{day.name}</Text>
-          <Text style={styles.count}>{totalCount} egzersiz</Text>
+          <Text style={styles.count}>
+            {totalCount} exercise{totalCount !== 1 ? 's' : ''}
+          </Text>
         </View>
         <Ionicons name="chevron-forward" size={22} color="#C7C7CC" />
       </View>
@@ -67,7 +69,7 @@ export default function DayCard({ day, onPress, onLongPress }: Props) {
       )}
 
       {lastDate && !day.isActive && (
-        <Text style={styles.lastDate}>Son: {lastDate}</Text>
+        <Text style={styles.lastDate}>Last: {lastDate}</Text>
       )}
     </TouchableOpacity>
   );
@@ -80,9 +82,9 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.12,
     shadowRadius: 12,
-    elevation: 4,
+    elevation: 5,
   },
   activeBadge: {
     flexDirection: 'row',

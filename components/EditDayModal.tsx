@@ -15,6 +15,7 @@ import { CARD_COLORS, EMOJI_OPTIONS } from '../constants/colors';
 interface Props {
   visible: boolean;
   day: WorkoutDay | null;
+  isNew?: boolean;
   onClose: () => void;
   onSave: (updates: { name: string; emoji: string; color: string }) => void;
   onDelete: () => void;
@@ -23,6 +24,7 @@ interface Props {
 export default function EditDayModal({
   visible,
   day,
+  isNew,
   onClose,
   onSave,
   onDelete,
@@ -59,15 +61,18 @@ export default function EditDayModal({
         />
         <View style={styles.sheet}>
           <View style={styles.handle} />
-          <Text style={styles.title}>Programi Duzenle</Text>
+          <Text style={styles.title}>
+            {isNew ? 'New Program' : 'Edit Program'}
+          </Text>
 
-          <Text style={styles.label}>Program Adi</Text>
+          <Text style={styles.label}>Program Name</Text>
           <TextInput
             style={styles.input}
             value={name}
             onChangeText={setName}
-            placeholder="Program adi"
+            placeholder="e.g. Upper Body"
             placeholderTextColor="#C7C7CC"
+            autoFocus={isNew}
           />
 
           <Text style={styles.label}>Emoji</Text>
@@ -90,7 +95,7 @@ export default function EditDayModal({
             ))}
           </ScrollView>
 
-          <Text style={styles.label}>Renk</Text>
+          <Text style={styles.label}>Color</Text>
           <View style={styles.colorGrid}>
             {CARD_COLORS.map((c) => (
               <TouchableOpacity
@@ -114,12 +119,20 @@ export default function EditDayModal({
             onPress={handleSave}
             disabled={!name.trim()}
           >
-            <Text style={styles.saveBtnText}>Kaydet</Text>
+            <Text style={styles.saveBtnText}>
+              {isNew ? 'Create' : 'Save'}
+            </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.deleteBtn} onPress={onDelete}>
-            <Ionicons name="trash-outline" size={18} color="#FF3B30" />
-            <Text style={styles.deleteBtnText}>Programi Sil</Text>
+          {!isNew && (
+            <TouchableOpacity style={styles.deleteBtn} onPress={onDelete}>
+              <Ionicons name="trash-outline" size={18} color="#FF3B30" />
+              <Text style={styles.deleteBtnText}>Delete Program</Text>
+            </TouchableOpacity>
+          )}
+
+          <TouchableOpacity style={styles.cancelBtn} onPress={onClose}>
+            <Text style={styles.cancelBtnText}>Cancel</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -239,5 +252,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     marginLeft: 6,
+  },
+  cancelBtn: {
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  cancelBtnText: {
+    color: '#8E8E93',
+    fontSize: 15,
+    fontWeight: '600',
   },
 });

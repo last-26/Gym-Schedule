@@ -59,12 +59,12 @@ export default function AddExerciseModal({ visible, onClose, onAdd }: Props) {
         />
         <View style={styles.sheet}>
           <View style={styles.handle} />
-          <Text style={styles.title}>Yeni Egzersiz</Text>
+          <Text style={styles.title}>New Exercise</Text>
 
-          <Text style={styles.label}>Egzersiz Adi</Text>
+          <Text style={styles.label}>Exercise Name</Text>
           <TextInput
             style={styles.input}
-            placeholder="Orn: Bench Press"
+            placeholder="e.g. Bench Press"
             placeholderTextColor="#C7C7CC"
             value={name}
             onChangeText={setName}
@@ -73,7 +73,7 @@ export default function AddExerciseModal({ visible, onClose, onAdd }: Props) {
 
           <View style={styles.row}>
             <View style={styles.halfField}>
-              <Text style={styles.label}>Set</Text>
+              <Text style={styles.label}>Sets</Text>
               <TextInput
                 style={styles.input}
                 keyboardType="numeric"
@@ -82,7 +82,7 @@ export default function AddExerciseModal({ visible, onClose, onAdd }: Props) {
               />
             </View>
             <View style={styles.halfField}>
-              <Text style={styles.label}>Tekrar</Text>
+              <Text style={styles.label}>Reps</Text>
               <TextInput
                 style={styles.input}
                 placeholder="8-10"
@@ -98,11 +98,11 @@ export default function AddExerciseModal({ visible, onClose, onAdd }: Props) {
             onPress={handleAdd}
             disabled={!name.trim()}
           >
-            <Text style={styles.addBtnText}>Ekle</Text>
+            <Text style={styles.addBtnText}>Add</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.cancelBtn} onPress={onClose}>
-            <Text style={styles.cancelBtnText}>Iptal</Text>
+            <Text style={styles.cancelBtnText}>Cancel</Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
