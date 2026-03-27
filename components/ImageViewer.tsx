@@ -17,6 +17,8 @@ interface Props {
   exerciseName: string;
   imagePath: string | undefined;
   onClose: () => void;
+  onPickImage: () => void;
+  onRemoveImage: () => void;
 }
 
 export default function ImageViewer({
@@ -24,6 +26,8 @@ export default function ImageViewer({
   exerciseName,
   imagePath,
   onClose,
+  onPickImage,
+  onRemoveImage,
 }: Props) {
   return (
     <Modal
@@ -57,9 +61,24 @@ export default function ImageViewer({
                   No image added yet
                 </Text>
                 <Text style={styles.placeholderSubtext}>
-                  Add an image to the assets folder{'\n'}and link it to this exercise
+                  Tap the button below to pick{'\n'}an image from your gallery
                 </Text>
               </View>
+            )}
+          </View>
+
+          <View style={styles.actions}>
+            <TouchableOpacity style={styles.pickBtn} onPress={onPickImage}>
+              <Ionicons name="images-outline" size={20} color="#FFF" />
+              <Text style={styles.pickBtnText}>
+                {imagePath ? 'Change Image' : 'Pick from Gallery'}
+              </Text>
+            </TouchableOpacity>
+            {imagePath && (
+              <TouchableOpacity style={styles.removeBtn} onPress={onRemoveImage}>
+                <Ionicons name="trash-outline" size={18} color="#FF3B30" />
+                <Text style={styles.removeBtnText}>Remove</Text>
+              </TouchableOpacity>
             )}
           </View>
         </View>
@@ -80,7 +99,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
     width: SCREEN_WIDTH - 48,
-    maxHeight: '80%',
+    maxHeight: '85%',
     overflow: 'hidden',
   },
   header: {
@@ -128,5 +147,36 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 8,
     lineHeight: 18,
+  },
+  actions: {
+    padding: 16,
+    paddingTop: 0,
+    gap: 10,
+  },
+  pickBtn: {
+    flexDirection: 'row',
+    backgroundColor: '#007AFF',
+    borderRadius: 12,
+    paddingVertical: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pickBtnText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+  removeBtn: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+  removeBtnText: {
+    color: '#FF3B30',
+    fontSize: 15,
+    fontWeight: '600',
+    marginLeft: 6,
   },
 });

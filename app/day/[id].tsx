@@ -12,11 +12,14 @@ import DraggableFlatList, {
   RenderItemParams,
 } from 'react-native-draggable-flatlist';
 import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
+import { Paths, Directory, File } from 'expo-file-system';
 import { Exercise, WorkoutDay } from '../../types';
 import {
   loadWorkoutData,
   updateDayExercises,
   updateExerciseWeight,
+  updateExerciseImage,
   deleteExercise,
   addExercise,
   updateExercise,
@@ -143,6 +146,58 @@ export default function DayDetailScreen() {
   const openEditModal = (exercise: Exercise) => {
     setEditingExercise(exercise);
     setModalVisible(true);
+  };
+
+  const handlePickImage = async () => {
+    if (!day || !imageExercise) return;
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      quality: 0.8,
+    });
+    if (result.canceled || !result.assets[0]) return;
+
+    const sourceUri = result.assets[0].uri;
+    const imgDir = new Directory(Paths.document, 'exercise-images');
+    if (!imgDir.exists) {
+      imgDir.create();
+    }
+    const fileName = `${imageExercise.id}_${Date.now()}.jpg`;
+    const sourceFile = new File(sourceUri);
+    sourceFile.copy(imgDir);
+    const copiedFile = new File(imgDir, sourceFile.name);
+    const destFile = new File(imgDir, fileName);
+    copiedFile.move(destFile);
+    const destUri = destFile.uri;
+
+    await updateExerciseImage(day.id, imageExercise.id, destUri);
+    setDay((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        exercises: prev.exercises.map((ex) =>
+          ex.id === imageExercise.id ? { ...ex, image: destUri } : ex,
+        ),
+      };
+    });
+    setImageExercise((prev) => prev ? { ...prev, image: destUri } : prev);
+  };
+
+  const handleRemoveImage = async () => {
+    if (!day || !imageExercise) return;
+    if (imageExercise.image) {
+      try { const f = new File(imageExercise.image); if (f.exists) f.delete(); } catch {}
+    }
+    await updateExerciseImage(day.id, imageExercise.id, undefined);
+    setDay((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        exercises: prev.exercises.map((ex) =>
+          ex.id === imageExercise.id ? { ...ex, image: undefined } : ex,
+        ),
+      };
+    });
+    setImageExercise((prev) => prev ? { ...prev, image: undefined } : prev);
   };
 
   const handleStartDay = async () => {
@@ -289,6 +344,8 @@ export default function DayDetailScreen() {
         exerciseName={imageExercise?.name ?? ''}
         imagePath={imageExercise?.image}
         onClose={() => setImageExercise(null)}
+        onPickImage={handlePickImage}
+        onRemoveImage={handleRemoveImage}
       />
     </View>
   );
