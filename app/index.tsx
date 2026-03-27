@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -32,6 +32,19 @@ export default function HomeScreen() {
       loadWorkoutData().then(setData);
     }, []),
   );
+
+  const DAY_ORDER: Record<string, number> = {
+    Monday: 0, Tuesday: 1, Wednesday: 2, Thursday: 3,
+    Friday: 4, Saturday: 5, Sunday: 6,
+  };
+
+  const sortedData = useMemo(() => {
+    return [...data].sort((a, b) => {
+      const aOrder = a.scheduledDay ? DAY_ORDER[a.scheduledDay] ?? 99 : 99;
+      const bOrder = b.scheduledDay ? DAY_ORDER[b.scheduledDay] ?? 99 : 99;
+      return aOrder - bOrder;
+    });
+  }, [data]);
 
   const handleAddDay = () => {
     setEditDay({
@@ -132,7 +145,7 @@ export default function HomeScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {data.length === 0 ? (
+        {sortedData.length === 0 ? (
           <View style={styles.empty}>
             <Ionicons name="barbell-outline" size={64} color="rgba(255,255,255,0.3)" />
             <Text style={styles.emptyText}>No programs yet</Text>
@@ -141,7 +154,7 @@ export default function HomeScreen() {
             </Text>
           </View>
         ) : (
-          data.map((day) => (
+          sortedData.map((day) => (
             <DayCard
               key={day.id}
               day={day}
