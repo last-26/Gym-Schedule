@@ -1,50 +1,70 @@
 # GymTracker
 
-Spor salonunda kullanmak icin tasarlanmis, haftalik antrenman programini takip eden bir React Native (Expo) uygulamasi.
+A gym workout tracker built with React Native and Expo. Track your workout programs, exercises, weights, and daily progress with a sleek dark UI featuring animated storm effects.
 
-## Ozellikler
+## Features
 
-- 4 gunluk antrenman programi (Upper/Lower split)
-- Egzersiz bazinda agirlik takibi (bu hafta / gecen hafta karsilastirmasi)
-- Surukle-birak ile egzersiz siralama
-- Egzersiz ekleme ve silme
-- "Haftayi Tamamla" ile otomatik gecen hafta kaydi
-- AsyncStorage ile kalici veri saklama
-- Expo Go uyumlu
+- Create, edit, and delete workout programs
+- Customize program cards with 18 colors and 12 emojis
+- Separate color selection for exercise cards inside each program
+- Add, remove, and reorder exercises via drag-and-drop
+- Track exercise weights with quick inline editing
+- Start/finish workout sessions per day
+- Mark exercises as completed during active sessions
+- Auto-complete prompt when all exercises are done
+- Exercise form image viewer (add your own images to assets)
+- Animated storm background with rain and procedural lightning bolts
+- OTA updates via EAS Update (no reinstall needed)
+- All data persisted locally with AsyncStorage
 
-## Teknoloji
+## Tech Stack
 
-- React Native + Expo (SDK 55)
+- React Native + Expo SDK 54
 - TypeScript
 - expo-router (file-based routing)
-- AsyncStorage
+- AsyncStorage (local persistence)
 - react-native-draggable-flatlist
 - react-native-reanimated + gesture-handler
+- expo-updates (OTA)
 
-## Kurulum
+## Getting Started
 
 ```bash
 npm install
 npx expo start
 ```
 
-Expo Go uygulamasiyla QR kodu okutarak telefonunuzda calistirabilirsiniz.
+Scan the QR code with Expo Go on your phone.
 
-## Proje Yapisi
+## Build
+
+```bash
+# APK for testing
+npx eas build --profile preview --platform android
+
+# OTA update (after first build)
+npx eas update --branch preview --message "update description"
+```
+
+## Project Structure
 
 ```
 app/
-  _layout.tsx          # Root layout
-  index.tsx            # Ana ekran (4 gun karti)
-  day/[id].tsx         # Gun detay ekrani
+  _layout.tsx              # Root layout, dark theme
+  index.tsx                # Home screen (program cards)
+  day/[id].tsx             # Day detail (exercises, workout session)
 components/
-  DayCard.tsx          # Gun karti
-  ExerciseRow.tsx      # Egzersiz satiri
-  AddExerciseModal.tsx # Egzersiz ekleme modali
+  DayCard.tsx              # Program card component
+  ExerciseRow.tsx          # Exercise row with weight + completion
+  AddExerciseModal.tsx     # New exercise form
+  EditDayModal.tsx         # Edit program (name, emoji, colors)
+  ImageViewer.tsx          # Exercise form image modal
+  StormBackground.tsx      # Rain + lightning animation
 store/
-  workoutStore.ts      # Veri katmani (AsyncStorage)
+  workoutStore.ts          # AsyncStorage data layer
 types/
-  index.ts             # TypeScript tipleri
+  index.ts                 # TypeScript interfaces
 constants/
-  defaultData.ts       # Varsayilan egzersiz verileri
+  defaultData.ts           # Default 4-day program
+  colors.ts                # 18-color palette + emoji options
 ```
