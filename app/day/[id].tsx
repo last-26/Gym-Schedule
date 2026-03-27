@@ -142,14 +142,21 @@ export default function DayDetailScreen() {
   };
 
   const handleConfirmComplete = () => {
-    Alert.alert(
-      'Finish Day',
-      'Do you want to finish this workout?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Finish', onPress: handleCompleteDay },
-      ],
-    );
+    if (!day) return;
+    const allDone = day.exercises.length > 0 &&
+      day.exercises.every((ex) => ex.completed);
+    if (allDone) {
+      handleCompleteDay();
+    } else {
+      Alert.alert(
+        'Finish Day',
+        'Some exercises are not completed. Finish anyway?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Finish', onPress: handleCompleteDay },
+        ],
+      );
+    }
   };
 
   const renderItem = useCallback(
@@ -183,62 +190,66 @@ export default function DayDetailScreen() {
   return (
     <View style={styles.container}>
       <StormBackground />
-      {day.isActive && totalCount > 0 && (
-        <View style={styles.progressHeader}>
-          <View style={styles.progressInfo}>
-            <Text style={styles.progressLabel}>Progress</Text>
-            <Text style={styles.progressCount}>
-              {completedCount}/{totalCount}
+
+      <View style={styles.listWrapper}>
+        {day.isActive && totalCount > 0 && (
+          <View style={styles.progressHeader}>
+            <View style={styles.progressInfo}>
+              <Text style={styles.progressLabel}>Progress</Text>
+              <Text style={styles.progressCount}>
+                {completedCount}/{totalCount}
+              </Text>
+            </View>
+            <View style={styles.progressBar}>
+              <View
+                style={[
+                  styles.progressFill,
+                  { width: `${(completedCount / totalCount) * 100}%` },
+                ]}
+              />
+            </View>
+          </View>
+        )}
+
+        {day.exercises.length === 0 ? (
+          <View style={styles.empty}>
+            <Ionicons name="barbell-outline" size={48} color="#C7C7CC" />
+            <Text style={styles.emptyText}>No exercises yet</Text>
+            <Text style={styles.emptySubtext}>
+              Tap + in the top right to add exercises
             </Text>
           </View>
-          <View style={styles.progressBar}>
-            <View
-              style={[
-                styles.progressFill,
-                { width: `${(completedCount / totalCount) * 100}%` },
-              ]}
-            />
-          </View>
-        </View>
-      )}
-
-      {day.exercises.length === 0 ? (
-        <View style={styles.empty}>
-          <Ionicons name="barbell-outline" size={48} color="#C7C7CC" />
-          <Text style={styles.emptyText}>No exercises yet</Text>
-          <Text style={styles.emptySubtext}>
-            Tap + in the top right to add exercises
-          </Text>
-        </View>
-      ) : (
-        <DraggableFlatList
-          data={day.exercises}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          onDragEnd={handleDragEnd}
-          contentContainerStyle={styles.listContent}
-        />
-      )}
-
-      <View style={styles.bottomBar}>
-        {!day.isActive ? (
-          <TouchableOpacity
-            style={styles.startBtn}
-            onPress={handleStartDay}
-            activeOpacity={0.8}
-          >
-            <Ionicons name="play" size={22} color="#FFF" />
-            <Text style={styles.startBtnText}>Start Workout</Text>
-          </TouchableOpacity>
         ) : (
-          <TouchableOpacity
-            style={styles.completeBtn}
-            onPress={handleConfirmComplete}
-            activeOpacity={0.8}
-          >
-            <Ionicons name="checkmark-done" size={22} color="#FFF" />
-            <Text style={styles.completeBtnText}>Finish Day</Text>
-          </TouchableOpacity>
+          <DraggableFlatList
+            data={day.exercises}
+            keyExtractor={(item) => item.id}
+            renderItem={renderItem}
+            onDragEnd={handleDragEnd}
+            contentContainerStyle={styles.listContent}
+            ListFooterComponent={
+              <View style={styles.footerBtn}>
+                {!day.isActive ? (
+                  <TouchableOpacity
+                    style={styles.startBtn}
+                    onPress={handleStartDay}
+                    activeOpacity={0.8}
+                  >
+                    <Ionicons name="play" size={22} color="#FFF" />
+                    <Text style={styles.startBtnText}>Start Workout</Text>
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.completeBtn}
+                    onPress={handleConfirmComplete}
+                    activeOpacity={0.8}
+                  >
+                    <Ionicons name="checkmark-done" size={22} color="#FFF" />
+                    <Text style={styles.completeBtnText}>Finish Day</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            }
+          />
         )}
       </View>
 
@@ -305,9 +316,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#34C759',
     borderRadius: 4,
   },
+  listWrapper: {
+    flex: 1,
+  },
   listContent: {
     padding: 16,
-    paddingBottom: 120,
+    paddingBottom: 16,
   },
   empty: {
     flex: 1,
@@ -327,13 +341,10 @@ const styles = StyleSheet.create({
     color: '#C7C7CC',
     textAlign: 'center',
   },
-  bottomBar: {
+  footerBtn: {
+    paddingTop: 16,
+    paddingBottom: 80,
     paddingHorizontal: 20,
-    paddingTop: 12,
-    paddingBottom: 32,
-    backgroundColor: '#0D0D1A',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.1)',
   },
   startBtn: {
     flexDirection: 'row',

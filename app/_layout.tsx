@@ -13,7 +13,6 @@ export default function RootLayout() {
           headerShadowVisible: false,
           headerTitleStyle: { fontWeight: '700' },
           contentStyle: { backgroundColor: '#0D0D1A' },
-          headerTransparent: true,
           animation: 'slide_from_right',
         }}
       >
