@@ -15,10 +15,19 @@ interface Props {
   drag: () => void;
   isActive: boolean;
   isDayActive: boolean;
+  exerciseColor?: string;
   onWeightChange: (weight: number | null) => void;
   onToggleCompleted: () => void;
   onDelete: () => void;
   onImagePress: () => void;
+}
+
+function isLightColor(hex: string): boolean {
+  const c = hex.replace('#', '');
+  const r = parseInt(c.substring(0, 2), 16);
+  const g = parseInt(c.substring(2, 4), 16);
+  const b = parseInt(c.substring(4, 6), 16);
+  return (r * 299 + g * 587 + b * 114) / 1000 > 140;
 }
 
 export default function ExerciseRow({
@@ -26,6 +35,7 @@ export default function ExerciseRow({
   drag,
   isActive,
   isDayActive,
+  exerciseColor,
   onWeightChange,
   onToggleCompleted,
   onDelete,
@@ -56,10 +66,18 @@ export default function ExerciseRow({
     ]);
   };
 
+  const bgColor = exerciseColor || '#FFFFFF';
+  const light = isLightColor(bgColor);
+  const textColor = light ? '#1C1C1E' : '#FFFFFF';
+  const subColor = light ? '#8E8E93' : 'rgba(255,255,255,0.55)';
+  const handleColor = light ? '#C7C7CC' : 'rgba(255,255,255,0.35)';
+  const weightBg = light ? '#F2F2F7' : 'rgba(255,255,255,0.1)';
+
   return (
     <View
       style={[
         styles.container,
+        { backgroundColor: bgColor },
         isActive && styles.activeContainer,
         exercise.completed && styles.completedContainer,
       ]}
@@ -69,14 +87,14 @@ export default function ExerciseRow({
         delayLongPress={150}
         style={styles.dragHandle}
       >
-        <Ionicons name="menu" size={22} color="#C7C7CC" />
+        <Ionicons name="menu" size={22} color={handleColor} />
       </TouchableOpacity>
 
       <View style={styles.content}>
         <View style={styles.topRow}>
           <TouchableOpacity style={styles.nameArea} onPress={onImagePress}>
             <Text
-              style={[styles.name, exercise.completed && styles.completedText]}
+              style={[styles.name, { color: textColor }, exercise.completed && styles.completedText]}
               numberOfLines={1}
             >
               {exercise.name}
@@ -98,7 +116,7 @@ export default function ExerciseRow({
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.setsReps}>
+        <Text style={[styles.setsReps, { color: subColor }]}>
           {exercise.sets} sets x {exercise.reps} reps
         </Text>
 
@@ -107,10 +125,10 @@ export default function ExerciseRow({
             {editing ? (
               <View style={styles.weightEditRow}>
                 <TextInput
-                  style={styles.weightInput}
+                  style={[styles.weightInput, { backgroundColor: weightBg, color: textColor }]}
                   keyboardType="numeric"
                   placeholder="kg"
-                  placeholderTextColor="#C7C7CC"
+                  placeholderTextColor={subColor}
                   value={weightText}
                   onChangeText={setWeightText}
                   onBlur={handleSaveWeight}
@@ -119,14 +137,14 @@ export default function ExerciseRow({
                   selectTextOnFocus
                   returnKeyType="done"
                 />
-                <Text style={styles.kgLabel}>kg</Text>
+                <Text style={[styles.kgLabel, { color: subColor }]}>kg</Text>
               </View>
             ) : (
               <TouchableOpacity
-                style={styles.weightDisplay}
+                style={[styles.weightDisplay, { backgroundColor: weightBg }]}
                 onPress={() => setEditing(true)}
               >
-                <Text style={styles.weightValue}>
+                <Text style={[styles.weightValue, { color: textColor }]}>
                   {exercise.weight !== null ? `${exercise.weight} kg` : '-- kg'}
                 </Text>
                 <Ionicons
@@ -163,24 +181,22 @@ export default function ExerciseRow({
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     marginBottom: 10,
     padding: 14,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
+    shadowOpacity: 0.1,
     shadowRadius: 6,
-    elevation: 2,
+    elevation: 3,
   },
   activeContainer: {
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.2,
     shadowRadius: 12,
     elevation: 8,
     transform: [{ scale: 1.02 }],
   },
   completedContainer: {
-    backgroundColor: '#F0FFF4',
     borderColor: '#34C759',
     borderWidth: 1,
   },
@@ -206,7 +222,6 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1C1C1E',
     flexShrink: 1,
   },
   completedText: {
@@ -215,7 +230,6 @@ const styles = StyleSheet.create({
   },
   setsReps: {
     fontSize: 13,
-    color: '#8E8E93',
     marginBottom: 8,
   },
   bottomRow: {
@@ -229,7 +243,6 @@ const styles = StyleSheet.create({
   weightDisplay: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F2F2F7',
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,
@@ -238,14 +251,12 @@ const styles = StyleSheet.create({
   weightValue: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#1C1C1E',
   },
   weightEditRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   weightInput: {
-    backgroundColor: '#F2F2F7',
     borderRadius: 8,
     borderWidth: 2,
     borderColor: '#007AFF',
@@ -253,7 +264,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     fontSize: 16,
     fontWeight: '600',
-    color: '#1C1C1E',
     width: 80,
     textAlign: 'center',
   },

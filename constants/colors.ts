@@ -1,7 +1,19 @@
+// Program card colors — mix of dark and light tones
 export const CARD_COLORS = [
-  '#EBF5FF', '#FFF3EB', '#EBFFF2', '#F5EBFF',
-  '#FFF0F0', '#FFFAEB', '#EBF0FF', '#F0FFFA',
-  '#FFE8F5', '#E8FFF0', '#FFF5E8', '#E8F0FF',
+  // Dark tones
+  '#1E3A5F', '#2D1B4E', '#1B3D2F', '#4A1C1C',
+  '#3B2F15', '#1C2D3D', '#2E1E3E', '#1A3333',
+  // Light tones
+  '#EBF5FF', '#F5EBFF', '#EBFFF2', '#FFF3EB',
+];
+
+// Exercise card colors — for inside the program
+export const EXERCISE_COLORS = [
+  // Dark tones
+  '#1C2530', '#2A1F35', '#1D2B22', '#302020',
+  '#2B2518', '#1A2530', '#252030', '#1C2828',
+  // Light tones
+  '#FFFFFF', '#F8F9FA', '#F0F4FF', '#FFF8F0',
 ];
 
 export const EMOJI_OPTIONS = [

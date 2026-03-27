@@ -38,7 +38,8 @@ export default function HomeScreen() {
       id: '',
       name: '',
       emoji: '\u{1F4AA}',
-      color: '#EBF5FF',
+      color: '#1E3A5F',
+      exerciseColor: '#1C2530',
       exercises: [],
       isActive: false,
     });
@@ -56,6 +57,7 @@ export default function HomeScreen() {
     name: string;
     emoji: string;
     color: string;
+    exerciseColor: string;
   }) => {
     if (isCreatingNew) {
       const newDay: WorkoutDay = {
@@ -63,6 +65,7 @@ export default function HomeScreen() {
         name: updates.name,
         emoji: updates.emoji,
         color: updates.color,
+        exerciseColor: updates.exerciseColor,
         exercises: [],
         isActive: false,
       };

@@ -14,9 +14,21 @@ interface Props {
   onLongPress: () => void;
 }
 
+function isLightColor(hex: string): boolean {
+  const c = hex.replace('#', '');
+  const r = parseInt(c.substring(0, 2), 16);
+  const g = parseInt(c.substring(2, 4), 16);
+  const b = parseInt(c.substring(4, 6), 16);
+  return (r * 299 + g * 587 + b * 114) / 1000 > 140;
+}
+
 export default function DayCard({ day, onPress, onLongPress }: Props) {
   const totalCount = day.exercises.length;
   const completedCount = day.exercises.filter((ex) => ex.completed).length;
+  const light = isLightColor(day.color);
+  const textColor = light ? '#1C1C1E' : '#FFFFFF';
+  const subTextColor = light ? '#8E8E93' : 'rgba(255,255,255,0.6)';
+  const chevronColor = light ? '#C7C7CC' : 'rgba(255,255,255,0.4)';
 
   const lastDate = day.lastCompletedDate
     ? new Date(day.lastCompletedDate).toLocaleDateString('en-US', {
@@ -42,17 +54,17 @@ export default function DayCard({ day, onPress, onLongPress }: Props) {
       <View style={styles.header}>
         <Text style={styles.emoji}>{day.emoji}</Text>
         <View style={styles.headerText}>
-          <Text style={styles.name}>{day.name}</Text>
-          <Text style={styles.count}>
+          <Text style={[styles.name, { color: textColor }]}>{day.name}</Text>
+          <Text style={[styles.count, { color: subTextColor }]}>
             {totalCount} exercise{totalCount !== 1 ? 's' : ''}
           </Text>
         </View>
-        <Ionicons name="chevron-forward" size={22} color="#C7C7CC" />
+        <Ionicons name="chevron-forward" size={22} color={chevronColor} />
       </View>
 
       {day.isActive && totalCount > 0 && (
         <View style={styles.progressSection}>
-          <View style={styles.progressBar}>
+          <View style={[styles.progressBar, { backgroundColor: light ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.15)' }]}>
             <View
               style={[
                 styles.progressFill,
@@ -69,7 +81,7 @@ export default function DayCard({ day, onPress, onLongPress }: Props) {
       )}
 
       {lastDate && !day.isActive && (
-        <Text style={styles.lastDate}>Last: {lastDate}</Text>
+        <Text style={[styles.lastDate, { color: subTextColor }]}>Last: {lastDate}</Text>
       )}
     </TouchableOpacity>
   );
@@ -82,7 +94,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
+    shadowOpacity: 0.2,
     shadowRadius: 12,
     elevation: 5,
   },
@@ -90,7 +102,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
-    backgroundColor: 'rgba(52, 199, 89, 0.15)',
+    backgroundColor: 'rgba(52, 199, 89, 0.2)',
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
@@ -122,12 +134,10 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1C1C1E',
     marginBottom: 2,
   },
   count: {
     fontSize: 14,
-    color: '#8E8E93',
   },
   progressSection: {
     flexDirection: 'row',
@@ -137,7 +147,6 @@ const styles = StyleSheet.create({
   progressBar: {
     flex: 1,
     height: 6,
-    backgroundColor: 'rgba(0,0,0,0.08)',
     borderRadius: 3,
     overflow: 'hidden',
     marginRight: 10,
@@ -154,7 +163,6 @@ const styles = StyleSheet.create({
   },
   lastDate: {
     fontSize: 12,
-    color: '#8E8E93',
     marginTop: 10,
   },
 });

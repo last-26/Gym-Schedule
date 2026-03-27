@@ -10,15 +10,23 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { WorkoutDay } from '../types';
-import { CARD_COLORS, EMOJI_OPTIONS } from '../constants/colors';
+import { CARD_COLORS, EXERCISE_COLORS, EMOJI_OPTIONS } from '../constants/colors';
 
 interface Props {
   visible: boolean;
   day: WorkoutDay | null;
   isNew?: boolean;
   onClose: () => void;
-  onSave: (updates: { name: string; emoji: string; color: string }) => void;
+  onSave: (updates: { name: string; emoji: string; color: string; exerciseColor: string }) => void;
   onDelete: () => void;
+}
+
+function isLightColor(hex: string): boolean {
+  const c = hex.replace('#', '');
+  const r = parseInt(c.substring(0, 2), 16);
+  const g = parseInt(c.substring(2, 4), 16);
+  const b = parseInt(c.substring(4, 6), 16);
+  return (r * 299 + g * 587 + b * 114) / 1000 > 140;
 }
 
 export default function EditDayModal({
@@ -32,18 +40,20 @@ export default function EditDayModal({
   const [name, setName] = useState('');
   const [emoji, setEmoji] = useState('');
   const [color, setColor] = useState('');
+  const [exerciseColor, setExerciseColor] = useState('');
 
   useEffect(() => {
     if (day) {
       setName(day.name);
       setEmoji(day.emoji);
       setColor(day.color);
+      setExerciseColor(day.exerciseColor || '#1C2530');
     }
   }, [day]);
 
   const handleSave = () => {
     if (!name.trim()) return;
-    onSave({ name: name.trim(), emoji, color });
+    onSave({ name: name.trim(), emoji, color, exerciseColor });
   };
 
   return (
@@ -59,82 +69,115 @@ export default function EditDayModal({
           activeOpacity={1}
           onPress={onClose}
         />
-        <View style={styles.sheet}>
-          <View style={styles.handle} />
-          <Text style={styles.title}>
-            {isNew ? 'New Program' : 'Edit Program'}
-          </Text>
-
-          <Text style={styles.label}>Program Name</Text>
-          <TextInput
-            style={styles.input}
-            value={name}
-            onChangeText={setName}
-            placeholder="e.g. Upper Body"
-            placeholderTextColor="#C7C7CC"
-            autoFocus={isNew}
-          />
-
-          <Text style={styles.label}>Emoji</Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.optionRow}
-          >
-            {EMOJI_OPTIONS.map((e) => (
-              <TouchableOpacity
-                key={e}
-                style={[
-                  styles.emojiBtn,
-                  emoji === e && styles.emojiBtnSelected,
-                ]}
-                onPress={() => setEmoji(e)}
-              >
-                <Text style={styles.emojiText}>{e}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-
-          <Text style={styles.label}>Color</Text>
-          <View style={styles.colorGrid}>
-            {CARD_COLORS.map((c) => (
-              <TouchableOpacity
-                key={c}
-                style={[
-                  styles.colorBtn,
-                  { backgroundColor: c },
-                  color === c && styles.colorBtnSelected,
-                ]}
-                onPress={() => setColor(c)}
-              >
-                {color === c && (
-                  <Ionicons name="checkmark" size={18} color="#007AFF" />
-                )}
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          <TouchableOpacity
-            style={[styles.saveBtn, !name.trim() && styles.saveBtnDisabled]}
-            onPress={handleSave}
-            disabled={!name.trim()}
-          >
-            <Text style={styles.saveBtnText}>
-              {isNew ? 'Create' : 'Save'}
+        <ScrollView
+          style={styles.sheetScroll}
+          contentContainerStyle={styles.sheetContent}
+          bounces={false}
+        >
+          <View style={styles.sheet}>
+            <View style={styles.handle} />
+            <Text style={styles.title}>
+              {isNew ? 'New Program' : 'Edit Program'}
             </Text>
-          </TouchableOpacity>
 
-          {!isNew && (
-            <TouchableOpacity style={styles.deleteBtn} onPress={onDelete}>
-              <Ionicons name="trash-outline" size={18} color="#FF3B30" />
-              <Text style={styles.deleteBtnText}>Delete Program</Text>
+            <Text style={styles.label}>Program Name</Text>
+            <TextInput
+              style={styles.input}
+              value={name}
+              onChangeText={setName}
+              placeholder="e.g. Upper Body"
+              placeholderTextColor="#C7C7CC"
+              autoFocus={isNew}
+            />
+
+            <Text style={styles.label}>Emoji</Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.optionRow}
+            >
+              {EMOJI_OPTIONS.map((e) => (
+                <TouchableOpacity
+                  key={e}
+                  style={[
+                    styles.emojiBtn,
+                    emoji === e && styles.emojiBtnSelected,
+                  ]}
+                  onPress={() => setEmoji(e)}
+                >
+                  <Text style={styles.emojiText}>{e}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+
+            <Text style={styles.label}>Card Color</Text>
+            <View style={styles.colorGrid}>
+              {CARD_COLORS.map((c) => (
+                <TouchableOpacity
+                  key={c}
+                  style={[
+                    styles.colorBtn,
+                    { backgroundColor: c },
+                    color === c && styles.colorBtnSelected,
+                  ]}
+                  onPress={() => setColor(c)}
+                >
+                  {color === c && (
+                    <Ionicons
+                      name="checkmark"
+                      size={18}
+                      color={isLightColor(c) ? '#007AFF' : '#FFFFFF'}
+                    />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <Text style={styles.label}>Exercise Card Color</Text>
+            <View style={styles.colorGrid}>
+              {EXERCISE_COLORS.map((c) => (
+                <TouchableOpacity
+                  key={c}
+                  style={[
+                    styles.colorBtn,
+                    { backgroundColor: c },
+                    exerciseColor === c && styles.colorBtnSelected,
+                  ]}
+                  onPress={() => setExerciseColor(c)}
+                >
+                  {exerciseColor === c && (
+                    <Ionicons
+                      name="checkmark"
+                      size={18}
+                      color={isLightColor(c) ? '#007AFF' : '#FFFFFF'}
+                    />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <TouchableOpacity
+              style={[styles.saveBtn, !name.trim() && styles.saveBtnDisabled]}
+              onPress={handleSave}
+              disabled={!name.trim()}
+            >
+              <Text style={styles.saveBtnText}>
+                {isNew ? 'Create' : 'Save'}
+              </Text>
             </TouchableOpacity>
-          )}
 
-          <TouchableOpacity style={styles.cancelBtn} onPress={onClose}>
-            <Text style={styles.cancelBtnText}>Cancel</Text>
-          </TouchableOpacity>
-        </View>
+            {!isNew && (
+              <TouchableOpacity style={styles.deleteBtn} onPress={onDelete}>
+                <Ionicons name="trash-outline" size={18} color="#FF3B30" />
+                <Text style={styles.deleteBtnText}>Delete Program</Text>
+              </TouchableOpacity>
+            )}
+
+            <TouchableOpacity style={styles.cancelBtn} onPress={onClose}>
+              <Text style={styles.cancelBtnText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
       </View>
     </Modal>
   );
@@ -148,6 +191,13 @@ const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  sheetScroll: {
+    maxHeight: '85%',
+  },
+  sheetContent: {
+    flexGrow: 1,
+    justifyContent: 'flex-end',
   },
   sheet: {
     backgroundColor: '#FFFFFF',

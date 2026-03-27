@@ -159,6 +159,7 @@ export default function DayDetailScreen() {
         drag={drag}
         isActive={isActive}
         isDayActive={day?.isActive ?? false}
+        exerciseColor={day?.exerciseColor}
         onWeightChange={(w) => handleWeightChange(item.id, w)}
         onToggleCompleted={() => handleToggleCompleted(item.id)}
         onDelete={() => handleDelete(item.id)}

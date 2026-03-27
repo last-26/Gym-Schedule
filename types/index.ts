@@ -14,6 +14,7 @@ export interface WorkoutDay {
   name: string;
   emoji: string;
   color: string;
+  exerciseColor: string;       // egzersiz kartlarinin rengi
   exercises: Exercise[];
   isActive: boolean;           // antrenman başlatıldı mı
   lastCompletedDate?: string;  // son tamamlanma tarihi
