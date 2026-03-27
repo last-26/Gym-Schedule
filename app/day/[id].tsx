@@ -26,6 +26,7 @@ import {
 import ExerciseRow from '../../components/ExerciseRow';
 import AddExerciseModal from '../../components/AddExerciseModal';
 import ImageViewer from '../../components/ImageViewer';
+import StormBackground from '../../components/StormBackground';
 
 export default function DayDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -90,18 +91,17 @@ export default function DayDetailScreen() {
     const found = updated.find((d) => d.id === day.id);
     if (found) {
       setDay(found);
-      // Tum egzersizler tamamlandiysa otomatik bitir
       const allDone = found.exercises.length > 0 &&
         found.exercises.every((ex) => ex.completed);
       if (allDone && found.isActive) {
         setTimeout(() => {
           Alert.alert(
-            'Tebrikler!',
-            'Tum hareketleri tamamladin! Gunu bitirmek ister misin?',
+            'Congratulations!',
+            'All exercises completed! Do you want to finish the day?',
             [
-              { text: 'Devam Et', style: 'cancel' },
+              { text: 'Continue', style: 'cancel' },
               {
-                text: 'Gunu Bitir',
+                text: 'Finish Day',
                 onPress: () => handleCompleteDay(),
               },
             ],
@@ -138,16 +138,16 @@ export default function DayDetailScreen() {
     const updated = await completeDay(day.id);
     const found = updated.find((d) => d.id === day.id);
     if (found) setDay(found);
-    Alert.alert('Harika!', 'Antrenman tamamlandi!');
+    Alert.alert('Great Job!', 'Workout completed!');
   };
 
   const handleConfirmComplete = () => {
     Alert.alert(
-      'Gunu Bitir',
-      'Bu antrenmani tamamlamak istiyor musun?',
+      'Finish Day',
+      'Do you want to finish this workout?',
       [
-        { text: 'Iptal', style: 'cancel' },
-        { text: 'Bitir', onPress: handleCompleteDay },
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Finish', onPress: handleCompleteDay },
       ],
     );
   };
@@ -181,10 +181,11 @@ export default function DayDetailScreen() {
 
   return (
     <View style={styles.container}>
+      <StormBackground />
       {day.isActive && totalCount > 0 && (
         <View style={styles.progressHeader}>
           <View style={styles.progressInfo}>
-            <Text style={styles.progressLabel}>Ilerleme</Text>
+            <Text style={styles.progressLabel}>Progress</Text>
             <Text style={styles.progressCount}>
               {completedCount}/{totalCount}
             </Text>
@@ -203,9 +204,9 @@ export default function DayDetailScreen() {
       {day.exercises.length === 0 ? (
         <View style={styles.empty}>
           <Ionicons name="barbell-outline" size={48} color="#C7C7CC" />
-          <Text style={styles.emptyText}>Henuz egzersiz yok</Text>
+          <Text style={styles.emptyText}>No exercises yet</Text>
           <Text style={styles.emptySubtext}>
-            Sag ustteki + butonuyla egzersiz ekle
+            Tap + in the top right to add exercises
           </Text>
         </View>
       ) : (
@@ -218,7 +219,6 @@ export default function DayDetailScreen() {
         />
       )}
 
-      {/* Alt buton alani */}
       <View style={styles.bottomBar}>
         {!day.isActive ? (
           <TouchableOpacity
@@ -227,7 +227,7 @@ export default function DayDetailScreen() {
             activeOpacity={0.8}
           >
             <Ionicons name="play" size={22} color="#FFF" />
-            <Text style={styles.startBtnText}>Antrenmani Baslat</Text>
+            <Text style={styles.startBtnText}>Start Workout</Text>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
@@ -236,7 +236,7 @@ export default function DayDetailScreen() {
             activeOpacity={0.8}
           >
             <Ionicons name="checkmark-done" size={22} color="#FFF" />
-            <Text style={styles.completeBtnText}>Gunu Bitir</Text>
+            <Text style={styles.completeBtnText}>Finish Day</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -260,25 +260,22 @@ export default function DayDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F2F2F7',
+    backgroundColor: '#0D0D1A',
   },
   loading: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F2F2F7',
+    backgroundColor: '#0D0D1A',
   },
   progressHeader: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(255,255,255,0.1)',
     marginHorizontal: 16,
     marginTop: 12,
     padding: 16,
     borderRadius: 14,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   progressInfo: {
     flexDirection: 'row',
@@ -289,7 +286,7 @@ const styles = StyleSheet.create({
   progressLabel: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#1C1C1E',
+    color: 'rgba(255,255,255,0.8)',
   },
   progressCount: {
     fontSize: 15,
@@ -298,7 +295,7 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: 8,
-    backgroundColor: '#F2F2F7',
+    backgroundColor: '#0D0D1A',
     borderRadius: 4,
     overflow: 'hidden',
   },
@@ -309,7 +306,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     padding: 16,
-    paddingBottom: 100,
+    paddingBottom: 120,
   },
   empty: {
     flex: 1,
@@ -330,14 +327,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   bottomBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingTop: 12,
     paddingBottom: 32,
-    backgroundColor: 'rgba(242, 242, 247, 0.95)',
+    backgroundColor: '#0D0D1A',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.1)',
   },
   startBtn: {
     flexDirection: 'row',
