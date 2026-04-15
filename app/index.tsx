@@ -9,28 +9,49 @@ import {
 } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { WorkoutData, WorkoutDay } from '../types';
+import { AppData, WorkoutData, WorkoutDay } from '../types';
 import {
+  loadAppData,
   loadWorkoutData,
   addWorkoutDay,
   deleteWorkoutDay,
   updateDayInfo,
+  addProgram,
+  updateProgram,
+  deleteProgram,
+  setActiveProgram,
+  duplicateProgram,
 } from '../store/workoutStore';
 import DayCard from '../components/DayCard';
 import EditDayModal from '../components/EditDayModal';
+import ProgramSelector from '../components/ProgramSelector';
 import StormBackground from '../components/StormBackground';
 
 export default function HomeScreen() {
+  const [appData, setAppData] = useState<AppData>({ programs: [], activeProgramId: '', days: [] });
   const [data, setData] = useState<WorkoutData>([]);
   const [editDay, setEditDay] = useState<WorkoutDay | null>(null);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [isCreatingNew, setIsCreatingNew] = useState(false);
+  const [programSelectorVisible, setProgramSelectorVisible] = useState(false);
   const router = useRouter();
+
+  const reload = useCallback(async () => {
+    const ad = await loadAppData();
+    setAppData(ad);
+    const days = await loadWorkoutData();
+    setData(days);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
-      loadWorkoutData().then(setData);
-    }, []),
+      reload();
+    }, [reload]),
+  );
+
+  const activeProgram = useMemo(
+    () => appData.programs.find((p) => p.id === appData.activeProgramId),
+    [appData],
   );
 
   const DAY_ORDER: Record<string, number> = {
@@ -46,9 +67,12 @@ export default function HomeScreen() {
     });
   }, [data]);
 
+  // ── Day handlers ──────────────────────────────────────────────────
+
   const handleAddDay = () => {
     setEditDay({
       id: '',
+      programId: appData.activeProgramId,
       name: '',
       emoji: '\u{1F4AA}',
       color: '#023E8A',
@@ -76,6 +100,7 @@ export default function HomeScreen() {
     if (isCreatingNew) {
       const newDay: WorkoutDay = {
         id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+        programId: appData.activeProgramId,
         name: updates.name,
         emoji: updates.emoji,
         color: updates.color,
@@ -127,6 +152,41 @@ export default function HomeScreen() {
     setIsCreatingNew(false);
   };
 
+  // ── Program handlers ──────────────────────────────────────────────
+
+  const handleSwitchProgram = async (programId: string) => {
+    const updated = await setActiveProgram(programId);
+    setAppData(updated);
+    const days = updated.days.filter((d) => d.programId === programId);
+    setData(days);
+  };
+
+  const handleAddProgram = async (name: string) => {
+    const updated = await addProgram(name);
+    setAppData(updated);
+    const days = updated.days.filter((d) => d.programId === updated.activeProgramId);
+    setData(days);
+  };
+
+  const handleRenameProgram = async (programId: string, name: string) => {
+    const updated = await updateProgram(programId, { name });
+    setAppData(updated);
+  };
+
+  const handleDeleteProgram = async (programId: string) => {
+    const updated = await deleteProgram(programId);
+    setAppData(updated);
+    const days = updated.days.filter((d) => d.programId === updated.activeProgramId);
+    setData(days);
+  };
+
+  const handleDuplicateProgram = async (programId: string, newName: string) => {
+    const updated = await duplicateProgram(programId, newName);
+    setAppData(updated);
+    const days = updated.days.filter((d) => d.programId === updated.activeProgramId);
+    setData(days);
+  };
+
   return (
     <View style={styles.container}>
       <StormBackground />
@@ -138,6 +198,20 @@ export default function HomeScreen() {
             <Ionicons name="add" size={28} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
+
+        {activeProgram && (
+          <TouchableOpacity
+            style={styles.programPill}
+            onPress={() => setProgramSelectorVisible(true)}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="folder-outline" size={18} color="#007AFF" />
+            <Text style={styles.programPillText} numberOfLines={1}>
+              {activeProgram.name}
+            </Text>
+            <Ionicons name="chevron-down" size={16} color="rgba(255,255,255,0.5)" />
+          </TouchableOpacity>
+        )}
       </View>
 
       <ScrollView
@@ -148,9 +222,9 @@ export default function HomeScreen() {
         {sortedData.length === 0 ? (
           <View style={styles.empty}>
             <Ionicons name="barbell-outline" size={64} color="rgba(255,255,255,0.3)" />
-            <Text style={styles.emptyText}>No programs yet</Text>
+            <Text style={styles.emptyText}>No days yet</Text>
             <Text style={styles.emptySubtext}>
-              Tap + to add a new program
+              Tap + to add a new workout day
             </Text>
           </View>
         ) : (
@@ -173,6 +247,17 @@ export default function HomeScreen() {
         onSave={handleSaveDay}
         onDelete={handleDeleteDay}
       />
+
+      <ProgramSelector
+        visible={programSelectorVisible}
+        appData={appData}
+        onClose={() => setProgramSelectorVisible(false)}
+        onSwitch={handleSwitchProgram}
+        onAdd={handleAddProgram}
+        onRename={handleRenameProgram}
+        onDelete={handleDeleteProgram}
+        onDuplicate={handleDuplicateProgram}
+      />
     </View>
   );
 }
@@ -184,7 +269,7 @@ const styles = StyleSheet.create({
   },
   headerSection: {
     paddingTop: 60,
-    paddingBottom: 24,
+    paddingBottom: 16,
     paddingHorizontal: 20,
   },
   headerTop: {
@@ -210,6 +295,25 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 10,
     elevation: 8,
+  },
+  programPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(0,122,255,0.15)',
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    marginTop: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(0,122,255,0.3)',
+  },
+  programPillText: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '600',
+    marginHorizontal: 8,
+    maxWidth: 200,
   },
   scroll: {
     flex: 1,

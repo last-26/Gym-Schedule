@@ -1,69 +1,85 @@
-import { WorkoutData } from '../types';
+import { AppData } from '../types';
+
+const DEFAULT_PROGRAM_ID = 'default_program';
 
 let counter = 0;
 function genId(): string {
   return Date.now().toString(36) + '_' + (counter++).toString(36);
 }
 
-export const DEFAULT_DATA: WorkoutData = [
-  {
-    id: 'upper1',
-    name: 'Üst 1',
-    emoji: '\u{1F4AA}',
-    color: '#023E8A',
-    exerciseColor: '#03045E',
-    isActive: false,
-    exercises: [
-      { id: genId(), name: 'Bench Press', sets: 4, reps: '8-10', weight: null, completed: false, notes: '' },
-      { id: genId(), name: 'Incline Dumbbell Press', sets: 3, reps: '10-12', weight: null, completed: false, notes: '' },
-      { id: genId(), name: 'Cable Row', sets: 4, reps: '10', weight: null, completed: false, notes: '' },
-      { id: genId(), name: 'Lat Pulldown', sets: 3, reps: '10-12', weight: null, completed: false, notes: '' },
-      { id: genId(), name: 'Overhead Press', sets: 3, reps: '8-10', weight: null, completed: false, notes: '' },
-    ],
-  },
-  {
-    id: 'lower1',
-    name: 'Alt 1',
-    emoji: '\u{1F9B5}',
-    color: '#C1121F',
-    exerciseColor: '#780000',
-    isActive: false,
-    exercises: [
-      { id: genId(), name: 'Squat', sets: 4, reps: '6-8', weight: null, completed: false, notes: '' },
-      { id: genId(), name: 'Romanian Deadlift', sets: 3, reps: '10-12', weight: null, completed: false, notes: '' },
-      { id: genId(), name: 'Leg Press', sets: 3, reps: '12-15', weight: null, completed: false, notes: '' },
-      { id: genId(), name: 'Leg Curl', sets: 3, reps: '12', weight: null, completed: false, notes: '' },
-      { id: genId(), name: 'Calf Raise', sets: 4, reps: '15-20', weight: null, completed: false, notes: '' },
-    ],
-  },
-  {
-    id: 'upper2',
-    name: 'Üst 2',
-    emoji: '\u{1F3CB}\u{FE0F}',
-    color: '#1B4332',
-    exerciseColor: '#2A9D8F',
-    isActive: false,
-    exercises: [
-      { id: genId(), name: 'Pull-up / Lat Pulldown', sets: 4, reps: '6-8', weight: null, completed: false, notes: '' },
-      { id: genId(), name: 'Dumbbell Row', sets: 3, reps: '10-12', weight: null, completed: false, notes: '' },
-      { id: genId(), name: 'Chest Fly', sets: 3, reps: '12-15', weight: null, completed: false, notes: '' },
-      { id: genId(), name: 'Lateral Raise', sets: 4, reps: '15', weight: null, completed: false, notes: '' },
-      { id: genId(), name: 'Tricep Pushdown', sets: 3, reps: '12-15', weight: null, completed: false, notes: '' },
-    ],
-  },
-  {
-    id: 'lower2',
-    name: 'Alt 2',
-    emoji: '\u{26A1}',
-    color: '#3C096C',
-    exerciseColor: '#212529',
-    isActive: false,
-    exercises: [
-      { id: genId(), name: 'Deadlift', sets: 4, reps: '5', weight: null, completed: false, notes: '' },
-      { id: genId(), name: 'Bulgarian Split Squat', sets: 3, reps: '10-12', weight: null, completed: false, notes: '' },
-      { id: genId(), name: 'Leg Extension', sets: 3, reps: '12-15', weight: null, completed: false, notes: '' },
-      { id: genId(), name: 'Hip Thrust', sets: 4, reps: '10-12', weight: null, completed: false, notes: '' },
-      { id: genId(), name: 'Standing Calf Raise', sets: 4, reps: '15-20', weight: null, completed: false, notes: '' },
-    ],
-  },
-];
+export const DEFAULT_DATA: AppData = {
+  programs: [
+    {
+      id: DEFAULT_PROGRAM_ID,
+      name: 'My Program',
+      createdAt: new Date().toISOString(),
+    },
+  ],
+  activeProgramId: DEFAULT_PROGRAM_ID,
+  days: [
+    {
+      id: 'upper1',
+      programId: DEFAULT_PROGRAM_ID,
+      name: 'Üst 1',
+      emoji: '\u{1F4AA}',
+      color: '#023E8A',
+      exerciseColor: '#03045E',
+      isActive: false,
+      exercises: [
+        { id: genId(), name: 'Bench Press', sets: 4, reps: '8-10', weight: null, completed: false, notes: '' },
+        { id: genId(), name: 'Incline Dumbbell Press', sets: 3, reps: '10-12', weight: null, completed: false, notes: '' },
+        { id: genId(), name: 'Cable Row', sets: 4, reps: '10', weight: null, completed: false, notes: '' },
+        { id: genId(), name: 'Lat Pulldown', sets: 3, reps: '10-12', weight: null, completed: false, notes: '' },
+        { id: genId(), name: 'Overhead Press', sets: 3, reps: '8-10', weight: null, completed: false, notes: '' },
+      ],
+    },
+    {
+      id: 'lower1',
+      programId: DEFAULT_PROGRAM_ID,
+      name: 'Alt 1',
+      emoji: '\u{1F9B5}',
+      color: '#C1121F',
+      exerciseColor: '#780000',
+      isActive: false,
+      exercises: [
+        { id: genId(), name: 'Squat', sets: 4, reps: '6-8', weight: null, completed: false, notes: '' },
+        { id: genId(), name: 'Romanian Deadlift', sets: 3, reps: '10-12', weight: null, completed: false, notes: '' },
+        { id: genId(), name: 'Leg Press', sets: 3, reps: '12-15', weight: null, completed: false, notes: '' },
+        { id: genId(), name: 'Leg Curl', sets: 3, reps: '12', weight: null, completed: false, notes: '' },
+        { id: genId(), name: 'Calf Raise', sets: 4, reps: '15-20', weight: null, completed: false, notes: '' },
+      ],
+    },
+    {
+      id: 'upper2',
+      programId: DEFAULT_PROGRAM_ID,
+      name: 'Üst 2',
+      emoji: '\u{1F3CB}\u{FE0F}',
+      color: '#1B4332',
+      exerciseColor: '#2A9D8F',
+      isActive: false,
+      exercises: [
+        { id: genId(), name: 'Pull-up / Lat Pulldown', sets: 4, reps: '6-8', weight: null, completed: false, notes: '' },
+        { id: genId(), name: 'Dumbbell Row', sets: 3, reps: '10-12', weight: null, completed: false, notes: '' },
+        { id: genId(), name: 'Chest Fly', sets: 3, reps: '12-15', weight: null, completed: false, notes: '' },
+        { id: genId(), name: 'Lateral Raise', sets: 4, reps: '15', weight: null, completed: false, notes: '' },
+        { id: genId(), name: 'Tricep Pushdown', sets: 3, reps: '12-15', weight: null, completed: false, notes: '' },
+      ],
+    },
+    {
+      id: 'lower2',
+      programId: DEFAULT_PROGRAM_ID,
+      name: 'Alt 2',
+      emoji: '\u{26A1}',
+      color: '#3C096C',
+      exerciseColor: '#212529',
+      isActive: false,
+      exercises: [
+        { id: genId(), name: 'Deadlift', sets: 4, reps: '5', weight: null, completed: false, notes: '' },
+        { id: genId(), name: 'Bulgarian Split Squat', sets: 3, reps: '10-12', weight: null, completed: false, notes: '' },
+        { id: genId(), name: 'Leg Extension', sets: 3, reps: '12-15', weight: null, completed: false, notes: '' },
+        { id: genId(), name: 'Hip Thrust', sets: 4, reps: '10-12', weight: null, completed: false, notes: '' },
+        { id: genId(), name: 'Standing Calf Raise', sets: 4, reps: '15-20', weight: null, completed: false, notes: '' },
+      ],
+    },
+  ],
+};

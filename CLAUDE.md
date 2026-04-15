@@ -2,7 +2,7 @@
 
 ## Project Summary
 
-A React Native (Expo) gym workout tracker app. Users create workout programs (days), add exercises with sets/reps/weight, start workout sessions, mark exercises as completed, and finish the day. The app features a dark theme with animated storm background (rain + lightning).
+A React Native (Expo) gym workout tracker app. Users manage multiple workout **programs** (e.g. "Push/Pull/Legs", "Upper/Lower Split"), each containing workout days with exercises. Users can switch between programs, keeping old ones archived. Within a program, users add exercises with sets/reps/weight, start workout sessions, mark exercises as completed, and finish the day. The app features a dark theme with animated storm background (rain + lightning).
 
 **Language:** All UI text is in English.
 
@@ -28,14 +28,15 @@ A React Native (Expo) gym workout tracker app. Users create workout programs (da
 GymTracker/
 ├── app/
 │   ├── _layout.tsx            # Root layout, GestureHandlerRootView, dark theme
-│   ├── index.tsx              # Home screen (program cards, add/edit/delete)
+│   ├── index.tsx              # Home screen (program selector, day cards)
 │   └── day/
 │       └── [id].tsx           # Day detail (exercises, start/finish workout)
 ├── components/
-│   ├── DayCard.tsx            # Program card on home screen
+│   ├── DayCard.tsx            # Day card on home screen
 │   ├── ExerciseRow.tsx        # Exercise row with weight, completion toggle
 │   ├── AddExerciseModal.tsx   # New exercise form modal
-│   ├── EditDayModal.tsx       # Edit program (name, emoji, card color, exercise color)
+│   ├── EditDayModal.tsx       # Edit day (name, emoji, card color, exercise color)
+│   ├── ProgramSelector.tsx    # Program switch/create/rename/delete/duplicate modal
 │   ├── ImageViewer.tsx        # Exercise image management modal (pick/change/remove)
 │   ├── FullScreenImage.tsx    # Full-screen dark overlay image viewer (view only)
 │   └── StormBackground.tsx    # Animated rain + lightning bolt background
@@ -44,10 +45,23 @@ GymTracker/
 ├── types/
 │   └── index.ts               # TypeScript interfaces
 ├── constants/
-│   ├── defaultData.ts         # Default 4-day program
+│   ├── defaultData.ts         # Default program with 4 days
 │   └── colors.ts              # 18-color palette + emoji options
 └── assets/                    # Icons, splash, exercise images (manual)
 ```
+
+---
+
+## Data Hierarchy
+
+**Program > Days > Exercises**
+
+The app uses a three-level hierarchy:
+- **Programs** (`WorkoutProgram[]`): top-level containers (e.g. "Push/Pull/Legs")
+- **Days** (`WorkoutDay[]`): workout days within a program, each linked via `programId`
+- **Exercises** (`Exercise[]`): exercises within a day
+
+One program is **active** at a time (`activeProgramId`). The home screen shows only the active program's days. Users switch programs via the program selector pill.
 
 ---
 
@@ -67,14 +81,27 @@ interface Exercise {
 
 interface WorkoutDay {
   id: string;
+  programId: string;      // which program this day belongs to
   name: string;
   emoji: string;
-  color: string;          // program card color (hex)
-  exerciseColor: string;  // exercise card color inside program (hex)
+  color: string;          // day card color (hex)
+  exerciseColor: string;  // exercise card color inside day (hex)
   scheduledDay?: string;  // day of week (Monday, Tuesday, etc.)
   exercises: Exercise[];
   isActive: boolean;      // workout session started
   lastCompletedDate?: string;
+}
+
+interface WorkoutProgram {
+  id: string;
+  name: string;
+  createdAt: string;
+}
+
+interface AppData {
+  programs: WorkoutProgram[];
+  activeProgramId: string;
+  days: WorkoutDay[];
 }
 ```
 
@@ -82,13 +109,24 @@ interface WorkoutDay {
 
 ## Key Features
 
+### Program Management (`components/ProgramSelector.tsx`)
+- **Program selector pill** on home screen (below header) shows active program name
+- Tap pill → opens dark-themed bottom sheet with all programs
+- Active program highlighted with blue border + checkmark
+- Tap a program → switches to it (home screen updates)
+- **"New Program"** button → inline name input to create empty program
+- **Long press** a program → action menu: Rename, Duplicate, Delete
+- Cannot delete last remaining program
+- Duplicate copies all days and exercises (resets completion state)
+
 ### Home Screen (`app/index.tsx`)
 - Dark background (#0D0D1A) with animated storm effect
-- Program cards with customizable colors (18-color palette)
-- **+ button** to add new program (modal form, card created on Save only)
+- Program selector pill (see above)
+- Day cards with customizable colors (18-color palette)
+- **+ button** to add new day to active program (modal form, card created on Save only)
 - **Long press** card to edit (name, emoji, card color, exercise color, scheduled day) or delete
 - Cards show: emoji, name, scheduled day, exercise count, last completed date (inline)
-- **Auto-sorted** by day of week (Monday → Sunday), unscheduled programs at bottom
+- **Auto-sorted** by day of week (Monday → Sunday), unscheduled days at bottom
 
 ### Day Detail (`app/day/[id].tsx`)
 - Storm background effect (same as home)
@@ -121,8 +159,11 @@ Text colors auto-adapt (white on dark, black on light) via `isLightColor()` help
 - Repeats every 4-11 seconds
 
 ### Data Layer (`store/workoutStore.ts`)
-- `migrateData()` handles schema migration from old versions
-- Functions: loadWorkoutData, saveWorkoutData, resetWorkoutData
+- **AppData format:** `{ programs, activeProgramId, days }` — all stored under single AsyncStorage key
+- **Migration:** Auto-detects old flat `WorkoutDay[]` format → wraps in AppData with default program
+- `migrateDays()` handles per-day field migration (new fields get defaults)
+- **Program CRUD:** addProgram, updateProgram, deleteProgram, setActiveProgram, duplicateProgram
+- **Day loading:** `loadWorkoutData()` returns only active program's days (backward-compatible)
 - Day CRUD: addWorkoutDay, deleteWorkoutDay, updateDayInfo
 - Exercise CRUD: addExercise, deleteExercise, updateExercise, updateDayExercises
 - Workout session: startDay, completeDay, toggleExerciseCompleted
@@ -155,7 +196,8 @@ npx eas update --branch preview --message "description"
 ## Important Behaviors
 
 - **Data persistence:** Every weight change saves immediately to AsyncStorage
-- **Schema migration:** Old data auto-migrates (new fields get defaults)
+- **Schema migration:** Old flat array data auto-migrates to AppData format (programs + days)
+- **Program switching:** Changing active program immediately updates home screen day list
 - **Session flow:** Start Workout → mark exercises done → auto-prompt or manual Finish Day
 - **No "Complete Week" button** — replaced by per-day session system
 - **Exercise images:** Picked from device gallery via `expo-image-picker`, copied to `documentDirectory/exercise-images/` for persistence

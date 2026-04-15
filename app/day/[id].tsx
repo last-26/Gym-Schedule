@@ -16,7 +16,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Paths, Directory, File } from 'expo-file-system';
 import { Exercise, WorkoutDay } from '../../types';
 import {
-  loadWorkoutData,
+  loadAppData,
   updateDayExercises,
   updateExerciseWeight,
   updateExerciseImage,
@@ -44,8 +44,8 @@ export default function DayDetailScreen() {
   const [viewImageExercise, setViewImageExercise] = useState<Exercise | null>(null);
 
   const loadDay = useCallback(async () => {
-    const data = await loadWorkoutData();
-    const found = data.find((d) => d.id === id);
+    const appData = await loadAppData();
+    const found = appData.days.find((d) => d.id === id);
     if (found) {
       setDay(found);
       navigation.setOptions({
